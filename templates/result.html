@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="result-card text-center">
+    <h1 class="mb-3"><i class="fas fa-check-circle text-sage"></i> {{ get_text('detection_results') }}</h1>
+
+    <!-- Processed Image -->
+    <div class="mb-4">
+        <img src="{{ url_for('static', filename='processed/' + result.output_image) }}" 
+             class="img-fluid rounded shadow-sm" 
+             alt="{{ get_text('detected_image_alt') }}"
+             style="max-width: 100%; height: auto; border-radius: var(--border-radius);">
+    </div>
+
+    <!-- Detection Info -->
+    <div class="info-card mb-4" style="max-width: 600px; margin: 0 auto;">
+        <h5 class="mb-3">{{ get_text('detection_information') }}</h5>
+        <ul class="list-group list-group-flush text-start">
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                {{ get_text('total_fish_detected') }}
+                <span class="badge bg-primary rounded-pill">{{ result.fish_count }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                {{ get_text('processing_time') }}
+                <span class="badge bg-secondary rounded-pill">{{ "%.2f"|format(result.process_time) }} {{ get_text('seconds') }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                {{ get_text('confidence_threshold') }}
+                <span class="badge bg-info rounded-pill">{{ result.confidence }}</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+        <a href="{{ url_for('download_file', filename=result.output_image) }}" class="btn btn-primary">
+            <i class="fas fa-download text-white"></i> {{ get_text('download_result_image') }}
+        </a>
+        <a href="{{ url_for('download_file', filename=result.resized_image) }}" class="btn btn-secondary">
+            <i class="fas fa-download text-white"></i> {{ get_text('download_resized_image') }}
+        </a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline">
+            <i class="fas fa-arrow-left text-taupe"></i> {{ get_text('back_to_upload') }}
+        </a>
+    </div>
+
+    <!-- Detected Fish List -->
+    {% if result.fish_details %}
+    <div class="info-card" style="max-width: 800px; margin: 0 auto;">
+        <h5 class="mb-3">{{ get_text('detected_fish_list') }}</h5>
+        <div class="list-group list-group-flush fish-list">
+            {% for fish in result.fish_details %}
+                <a href="#" class="list-group-item list-group-item-action" 
+                   data-bs-toggle="modal" 
+                   data-bs-target="#fishModal"
+                   data-fish-id="{{ loop.index }}"
+                   data-fish-confidence="{{ '%.2f'|format(fish.confidence) }}"
+                   data-fish-box="{{ fish.box }}"
+                   data-fish-image="{{ url_for('static', filename='processed/' + result.output_image) }}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">{{ get_text('fish') }} #{{ loop.index }}</h6>
+                        <small>{{ get_text('confidence') }}: {{ "%.2f"|format(fish.confidence) }}</small>
+                    </div>
+                    <p class="mb-1 text-muted"><small>{{ get_text('bounding_box') }}: {{ fish.box }}</small></p>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="fishModal" tabindex="-1" aria-labelledby="fishModalLabel" aria-hidden="true" data-fish-text="{{ get_text('fish') }}">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fishModalLabel">{{ get_text('fish_details_title') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="text-center">
+                            <canvas id="fishCanvas" class="img-fluid rounded" style="width: 100%; height: auto;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h5 id="modalFishId"></h5>
+                        <p class="mb-1"><strong>{{ get_text('confidence') }}:</strong> <span id="modalFishConfidence"></span></p>
+                        <p class="mb-1"><strong>{{ get_text('bounding_box') }}:</strong></p>
+                        <p><small id="modalFishBox" class="text-muted"></small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/result.js') }}"></script>
+{% endblock %}

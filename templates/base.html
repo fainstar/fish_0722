@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('language', 'zh') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ get_text('fish_detection_system') }}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header class="container">
+        <nav class="navbar navbar-expand-lg navbar-light navbar-glass">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <i class="fas fa-fish text-sage"></i> {{ get_text('fish_detection_system') }}
+                </a>
+                
+                <div class="navbar-nav me-auto">
+                    <a class="nav-link" href="{{ url_for('log_viewer') }}">
+                        <i class="fas fa-chart-line text-taupe"></i> {{ get_text('system_logs') }}
+                    </a>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="languageMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-globe text-dusty-rose"></i> {{ get_text(session.get('language', 'zh')) }}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="languageMenuButton">
+                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='zh') }}">{{ get_text('zh') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='en') }}">{{ get_text('en') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='ja') }}">{{ get_text('ja') }}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <div id="alert-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 {{ get_text('fish_detection_system') }}. {{ get_text('footer_text') }}</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center">
+    <div class="upload-card">
+        <h1 class="mb-2">{{ get_text('upload_image_for_detection') }}</h1>
+        
+        <form action="{{ url_for('upload_file_api') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="mb-4">
+                <label for="file" class="form-label">{{ get_text('select_image_file') }}</label>
+                
+                <!-- 按鈕左右排列 -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-grid">
+                            <label for="file" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-upload"></i><br>
+                                {{ get_text('select_image_file') }}
+                                <input type="file" class="d-none" id="file" name="file" accept="image/*">
+                            </label>
+                        </div>
+                        <div id="fileInfo" class="mt-2 text-center"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-outline-secondary btn-lg" id="useSampleBtn" onclick="useSampleImage()">
+                                <i class="fas fa-image"></i><br>
+                                {{ get_text('use_sample_image') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="confidence" class="form-label">{{ get_text('confidence_threshold') }}</label>
+                <div class="range-slider-container">
+                    <span>{{ get_text('low') }}</span>
+                    <input type="range" class="form-range" id="confidence" name="confidence" 
+                           min="0.1" max="1.0" step="0.1" value="0.5"
+                           oninput="document.getElementById('confidenceValue').innerText = this.value">
+                    <span>{{ get_text('high') }}</span>
+                    <span id="confidenceValue" class="ms-3">0.5</span>
+                </div>
+                <div class="form-text mt-2">{{ get_text('confidence_help_text') }}</div>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                    <i class="fas fa-search"></i> {{ get_text('start_detection') }}
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- 系統設計架構 -->
+    <div class="info-card mb-4">
+        <h5 class="mb-3"><i class="fas fa-sitemap text-sage"></i> {{ get_text('system_architecture') }}</h5>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-upload text-sage"></i>
+                    </div>
+                    <h6>{{ get_text('image_upload_module') }}</h6>
+                    <p class="small text-muted">{{ get_text('upload_module_desc') }}</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain text-dusty-rose"></i>
+                    </div>
+                    <h6>{{ get_text('ai_detection_engine') }}</h6>
+                    <p class="small text-muted">{{ get_text('ai_engine_desc') }}</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar text-taupe"></i>
+                    </div>
+                    <h6>{{ get_text('data_analysis_module') }}</h6>
+                    <p class="small text-muted">{{ get_text('data_analysis_desc') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 技術特色 -->
+    <div class="info-card mb-4">
+        <h5 class="mb-3"><i class="fas fa-star text-lavender"></i> {{ get_text('technical_features') }}</h5>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <h6><i class="fas fa-rocket text-sage"></i> {{ get_text('high_performance_processing') }}</h6>
+                <ul class="list-unstyled text-muted small">
+                    <li>• {{ get_text('flask_backend_framework') }}</li>
+                    <li>• {{ get_text('opencv_image_processing') }}</li>
+                    <li>• {{ get_text('roboflow_api_detection') }}</li>
+                    <li>• {{ get_text('auto_image_optimization') }}</li>
+                </ul>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h6><i class="fas fa-palette text-dusty-rose"></i> {{ get_text('modern_design') }}</h6>
+                <ul class="list-unstyled text-muted small">
+                    <li>• {{ get_text('morandi_color_system') }}</li>
+                    <li>• {{ get_text('responsive_web_design') }}</li>
+                    <li>• {{ get_text('multi_language_support') }}</li>
+                    <li>• {{ get_text('intuitive_user_interface') }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 使用流程 -->
+    <div class="info-card">
+        <h5 class="mb-3"><i class="fas fa-list-ol text-taupe"></i> {{ get_text('usage_process') }}</h5>
+        <div class="row">
+            <div class="col-md-3 mb-3 text-center">
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <h6>{{ get_text('upload_image_step') }}</h6>
+                    <p class="small text-muted">{{ get_text('upload_step_desc') }}</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3 text-center">
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <h6>{{ get_text('set_parameters') }}</h6>
+                    <p class="small text-muted">{{ get_text('parameters_step_desc') }}</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3 text-center">
+                <div class="step-box">
+                    <div class="step-number">3</div>
+                    <h6>{{ get_text('ai_analysis') }}</h6>
+                    <p class="small text-muted">{{ get_text('analysis_step_desc') }}</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3 text-center">
+                <div class="step-box">
+                    <div class="step-number">4</div>
+                    <h6>{{ get_text('view_results') }}</h6>
+                    <p class="small text-muted">{{ get_text('results_step_desc') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 將翻譯傳遞給 JavaScript
+window.translations = {
+    'start_detection': '{{ get_text("start_detection") }}',
+    'sample_image_selected': '{{ get_text("sample_image_selected") }}',
+    'sample_image_chosen': '{{ get_text("sample_image_chosen") }}',
+    'use_sample_image': '{{ get_text("use_sample_image") }}',
+    'image_preview': '{{ get_text("image_preview") }}',
+    'please_select_image_or_sample': '{{ get_text("please_select_image_or_sample") }}',
+    'file_too_large': '{{ get_text("file_too_large") }}',
+    'processing_failed': '{{ get_text("processing_failed") }}',
+    'network_error': '{{ get_text("network_error") }}',
+    'copied_to_clipboard': '{{ get_text("copied_to_clipboard") }}',
+    'copy_failed': '{{ get_text("copy_failed") }}'
+};
+
+// 翻譯函數
+function t(key) {
+    return window.translations[key] || key;
+}
+</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}
