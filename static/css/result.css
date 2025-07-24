@@ -23,3 +23,15 @@
     width: 100%;
     height: auto;
 }
+
+/* 魚類列表樣式 */
+.fish-list .list-group-item {
+    margin-bottom: 8px;
+    border-radius: 8px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.fish-list .list-group-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}

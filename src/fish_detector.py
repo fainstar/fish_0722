@@ -11,16 +11,30 @@ from pathlib import Path
 from src.config import config
 
 class FishDetectionSystem:
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, endpoint_name='detect_count_visualize'):
         self.api_key = api_key or config.ROBOFLOW_API_KEY
-        self.api_url = config.ROBOFLOW_API_URL
+        self.endpoint_config = config.get_api_endpoint(endpoint_name)
+        self.api_url = self.endpoint_config.get('url', config.ROBOFLOW_API_URL)
+        self.model_id = self.endpoint_config.get('model_id', config.ROBOFLOW_MODEL_ID)
+        self.timeout = config.API_TIMEOUT
+        self.retry_attempts = config.API_RETRY_ATTEMPTS
+        self.retry_delay = config.API_RETRY_DELAY
+        self.default_params = config.get_default_parameters()
         
-    def resize_image(self, image_path, max_size=(2048, 2048)):
+    def resize_image(self, image_path, max_size=None):
         """調整圖片大小，確保不超過指定的最大尺寸"""
+        if max_size is None:
+            max_size = (config.IMAGE_MAX_SIZE['width'], config.IMAGE_MAX_SIZE['height'])
+            
         with Image.open(image_path) as img:
             img.thumbnail(max_size)
             resized_path = Path(image_path).with_name("resized_" + Path(image_path).name)
-            img.save(resized_path, format=img.format)
+            
+            # 使用配置中的品質設定
+            if img.format == 'JPEG':
+                img.save(resized_path, format=img.format, quality=config.IMAGE_QUALITY)
+            else:
+                img.save(resized_path, format=img.format)
         return resized_path
 
     def image_to_base64(self, image_path):
@@ -29,7 +43,7 @@ class FishDetectionSystem:
             encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
         return encoded_string
 
-    def detect_fish_api(self, image_path):
+    def detect_fish_api(self, image_path, confidence=None):
         """使用 Roboflow API 進行魚類偵測"""
         headers = {'Content-Type': 'application/json'}
         
@@ -38,6 +52,11 @@ class FishDetectionSystem:
         
         # 將圖片轉換為base64
         image_base64 = self.image_to_base64(resized_image_path)
+        
+        # 使用配置中的預設參數，並允許覆蓋
+        params = self.default_params.copy()
+        if confidence is not None:
+            params['confidence'] = confidence
         
         payload = {
             "api_key": self.api_key,
@@ -49,21 +68,49 @@ class FishDetectionSystem:
             }
         }
         
-        try:
-            response = requests.post(self.api_url, headers=headers, json=payload)
-            response.raise_for_status()
-            
-            response_data = response.json()
-            
-            # 儲存API回應
-            response_file = Path(image_path).with_name("response.json")
-            with open(response_file, "w", encoding="utf-8") as json_file:
-                import json
-                json.dump(response_data, json_file, indent=2, ensure_ascii=False)
+        # 添加額外參數到 payload
+        if params:
+            payload.update(params)
+        
+        # 實施重試邏輯
+        import time
+        for attempt in range(self.retry_attempts):
+            try:
+                response = requests.post(
+                    self.api_url, 
+                    headers=headers, 
+                    json=payload,
+                    timeout=self.timeout
+                )
+                response.raise_for_status()
                 
-            return response_data, str(resized_image_path)
-            
-        except requests.exceptions.RequestException as e:
+                response_data = response.json()
+                
+                # 儲存API回應，包含更多元數據
+                response_file = Path(image_path).with_name("response.json")
+                metadata = {
+                    "api_endpoint": self.api_url,
+                    "model_id": self.model_id,
+                    "parameters": params,
+                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "attempt": attempt + 1,
+                    "response": response_data
+                }
+                
+                with open(response_file, "w", encoding="utf-8") as json_file:
+                    import json
+                    json.dump(metadata, json_file, indent=2, ensure_ascii=False)
+                    
+                return response_data, str(resized_image_path)
+                
+            except requests.exceptions.RequestException as e:
+                if attempt < self.retry_attempts - 1:
+                    print(f"API 調用失敗，第 {attempt + 1} 次重試: {e}")
+                    time.sleep(self.retry_delay)
+                    continue
+                else:
+                    print(f"API 調用最終失敗: {e}")
+                    raise e
             print(f"API request error: {e}")
             return None, None
 

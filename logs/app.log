@@ -49,3 +49,23 @@
 2025-07-24 14:47:31 - INFO - API processing successful: IMG_0021_processed.jpg - Found 20 fish - Processing time: 7.16s - User: 127.0.0.1
 2025-07-24 14:47:31 - INFO - Result page viewed: d7eab704-2ac7-465a-aba0-6fffc1d629f3 - Fish count: 20 - User: 127.0.0.1
 2025-07-24 14:47:39 - INFO - Language changed to en for user 127.0.0.1
+2025-07-24 14:49:46 - INFO - Fish Detection System started - Modular architecture
+2025-07-24 14:49:56 - INFO - Fish Detection System started - Modular architecture
+2025-07-24 14:50:14 - INFO - Fish Detection System started - Modular architecture
+2025-07-24 14:50:38 - INFO - Fish Detection System started - Modular architecture
+2025-07-24 14:50:58 - INFO - Fish Detection System started - Modular architecture
+2025-07-24 14:51:16 - INFO - Fish Detection System started - Modular architecture
+2025-07-24 14:52:08 - INFO - API processing successful: A.JPG - Found 68 fish - Processing time: 7.28s - User: 127.0.0.1
+2025-07-24 14:52:08 - INFO - Result page viewed: 4eebfe6f-37a8-4308-a230-16e393f1dc6b - Fish count: 68 - User: 127.0.0.1
+2025-07-24 14:52:44 - INFO - Fish Detection System started - Modular architecture
+2025-07-24 14:53:00 - INFO - API processing successful: A.JPG - Found 68 fish - Processing time: 5.58s - User: 127.0.0.1
+2025-07-24 14:53:00 - INFO - Result page viewed: 093d5930-fab7-492d-a7de-a4c1338b5ab7 - Fish count: 68 - User: 127.0.0.1
+2025-07-24 14:54:40 - WARNING - Result not found in cache: 093d5930-fab7-492d-a7de-a4c1338b5ab7 - User: 127.0.0.1
+2025-07-24 14:54:52 - INFO - API processing successful: IMG_0027_processed.jpg - Found 14 fish - Processing time: 4.00s - User: 127.0.0.1
+2025-07-24 14:54:52 - INFO - Result page viewed: 4d66f88a-22d2-43cc-b30b-914fcac6fb9c - Fish count: 14 - User: 127.0.0.1
+2025-07-24 15:01:39 - INFO - Language changed to zh for user 127.0.0.1
+2025-07-24 15:04:25 - INFO - Language changed to en for user 127.0.0.1
+2025-07-24 15:09:05 - INFO - Language changed to zh for user 127.0.0.1
+2025-07-24 15:09:58 - INFO - Fish Detection System started - Modular architecture
+2025-07-24 15:09:59 - INFO - Fish Detection System started - Modular architecture
+2025-07-24 15:10:48 - INFO - Language changed to en for user 127.0.0.1

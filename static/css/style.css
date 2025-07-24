@@ -510,6 +510,23 @@ input[type="file"]::file-selector-button:hover {
     background: linear-gradient(135deg, rgba(247, 245, 243, 0.8) 0%, rgba(236, 232, 225, 0.8) 100%);
 }
 
+.footer p {
+    margin-bottom: 0.5rem;
+}
+
+.footer .text-muted {
+    color: rgba(108, 117, 125, 0.8) !important;
+}
+
+.footer strong {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.footer .fas {
+    color: var(--accent-sage);
+}
+
 /* Loading Spinner */
 #spinner {
     display: none;

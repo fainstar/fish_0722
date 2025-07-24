@@ -48,9 +48,9 @@
     {% if result.fish_details %}
     <div class="info-card info-card-wide">
         <h5 class="mb-3">{{ get_text('detected_fish_list') }}</h5>
-        <div class="list-group list-group-flush fish-list">
+        <div class="list-group fish-list">
             {% for fish in result.fish_details %}
-                <a href="#" class="list-group-item list-group-item-action" 
+                <a href="#" class="list-group-item list-group-item-action p-3" 
                    data-bs-toggle="modal" 
                    data-bs-target="#fishModal"
                    data-fish-id="{{ loop.index }}"
