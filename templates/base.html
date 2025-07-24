@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ session.get('language', 'zh') }}">
+<html lang="{{ current_language or 'zh' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,12 +24,20 @@
                 
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="languageMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-globe text-dusty-rose"></i> {{ get_text(session.get('language', 'zh')) }}
+                        {% if current_language == 'zh' %}
+                            🇹🇼 {{ get_text('zh') }}
+                        {% elif current_language == 'en' %}
+                            🇺🇸 {{ get_text('en') }}
+                        {% elif current_language == 'ja' %}
+                            🇯🇵 {{ get_text('ja') }}
+                        {% else %}
+                            🌐 {{ get_text(current_language or 'zh') }}
+                        {% endif %}
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="languageMenuButton">
-                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='zh') }}">{{ get_text('zh') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='en') }}">{{ get_text('en') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='ja') }}">{{ get_text('ja') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='zh') }}">🇹🇼 {{ get_text('zh') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='en') }}">🇺🇸 {{ get_text('en') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='ja') }}">🇯🇵 {{ get_text('ja') }}</a></li>
                     </ul>
                 </div>
             </div>

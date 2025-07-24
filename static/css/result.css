@@ -1,0 +1,25 @@
+/* 結果頁面專用樣式 - result.css */
+
+/* 結果圖片樣式 */
+.result-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+}
+
+/* 資訊卡片樣式 */
+.info-card-centered {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.info-card-wide {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Canvas 樣式 */
+.fish-canvas {
+    width: 100%;
+    height: auto;
+}

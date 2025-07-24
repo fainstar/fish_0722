@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  fish-detection:
+    build: 
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: fish-detection-system
+    ports:
+      - "5001:5001"
+    volumes:
+      # 持久化日誌
+      - ./logs:/app/logs
+      # 持久化上傳和處理的圖片
+      - ./static/uploads:/app/static/uploads
+      - ./static/processed:/app/static/processed
+      - ./data:/app/data
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - fish-detection-network
+
+networks:
+  fish-detection-network:
+    driver: bridge
+
+volumes:
+  logs:
+  uploads:
+  processed:
+  data:

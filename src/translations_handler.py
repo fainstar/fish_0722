@@ -4,19 +4,23 @@
 import json
 from pathlib import Path
 from flask import g, request, session
-from config import config
+from src.config import config
 
 # 翻譯數據存儲
 translations = {}
 
 def load_translations():
     """Load translations from JSON files."""
-    lang_dir = Path(__file__).parent / 'translations'
+    # 修正翻譯文件路徑 - 翻譯文件在專案根目錄
+    lang_dir = Path(__file__).parent.parent / 'translations'
     for lang in config.LANGUAGES:
         filepath = lang_dir / f"{lang}.json"
         if filepath.exists():
             with open(filepath, 'r', encoding='utf-8') as f:
                 translations[lang] = json.load(f)
+        else:
+            print(f"Warning: Translation file not found: {filepath}")
+            translations[lang] = {}
 
 def get_text(key, **kwargs):
     """Get translated text for a given key with optional formatting."""
@@ -35,13 +39,17 @@ def get_text(key, **kwargs):
 
 def set_language_context():
     """Set the language for the current request."""
-    g.language = session.get('language', request.accept_languages.best_match(config.LANGUAGES.keys()))
+    # 從 session 獲取語言，如果沒有則使用瀏覽器語言偏好，最後預設為中文
+    lang = session.get('language')
+    if not lang:
+        lang = request.accept_languages.best_match(config.LANGUAGES.keys()) or 'zh'
+    g.language = lang
 
 def get_template_context():
     """Inject translation function and language info into templates."""
     return dict(
         get_text=get_text, 
-        current_language=g.language, 
+        current_language=getattr(g, 'language', 'zh'), 
         languages=config.LANGUAGES
     )
 

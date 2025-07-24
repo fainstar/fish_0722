@@ -2,12 +2,13 @@
 日誌系統模塊 - 處理所有日誌相關功能
 """
 import os
+import re
 import logging
 import logging.handlers
 from datetime import datetime
 from user_agents import parse
 from flask import request, session, g
-from config import config
+from src.config import config
 
 # 全局日誌記錄器
 app_logger = None
@@ -16,6 +17,10 @@ user_logger = None
 def setup_logging():
     """設置日誌系統"""
     global app_logger, user_logger
+    
+    # 如果已經初始化過，直接返回
+    if app_logger is not None and user_logger is not None:
+        return app_logger, user_logger
     
     # 創建日誌格式
     log_format = logging.Formatter(
@@ -26,10 +31,18 @@ def setup_logging():
     # 創建主要應用程式日誌
     app_logger = logging.getLogger('fish_app')
     app_logger.setLevel(logging.INFO)
+    app_logger.propagate = False  # 防止向父記錄器傳播
+    
+    # 清除既有的處理器以防重複
+    app_logger.handlers.clear()
     
     # 創建用戶活動日誌
     user_logger = logging.getLogger('user_activity')
     user_logger.setLevel(logging.INFO)
+    user_logger.propagate = False  # 防止向父記錄器傳播
+    
+    # 清除既有的處理器以防重複
+    user_logger.handlers.clear()
     
     # 應用程式日誌文件處理器（每天輪替）
     app_handler = logging.handlers.TimedRotatingFileHandler(
@@ -57,6 +70,20 @@ def setup_logging():
     app_logger.addHandler(console_handler)
     
     return app_logger, user_logger
+
+def get_app_logger():
+    """獲取應用程式日誌記錄器，如果不存在則初始化"""
+    global app_logger
+    if app_logger is None:
+        setup_logging()
+    return app_logger
+
+def get_user_logger():
+    """獲取用戶活動日誌記錄器，如果不存在則初始化"""
+    global user_logger
+    if user_logger is None:
+        setup_logging()
+    return user_logger
 
 def get_client_info(request):
     """獲取客戶端詳細信息"""
@@ -233,7 +260,7 @@ def parse_log_message(message):
         return None
 
 def calculate_log_statistics(logs):
-    """計算日誌統計數據"""
+    """計算日誌統計數據 - 支援用戶活動日誌和應用程式日誌"""
     stats = {
         'total_users': 0,
         'total_uploads': 0,
@@ -244,23 +271,75 @@ def calculate_log_statistics(logs):
     
     unique_ips = set()
     processing_times = []
+    upload_sessions = set()  # 用來避免重複計算上傳
     
     for log in logs:
         # 統計唯一用戶
         if log.get('ip'):
             unique_ips.add(log['ip'])
         
-        # 統計上傳
-        if 'upload' in log.get('action', '').lower():
-            stats['total_uploads'] += 1
+        # 創建上傳會話 ID 來避免重複計算
+        session_key = None
+        if log.get('details') and log['details'].get('filename'):
+            filename = log['details']['filename']
+            timestamp = log.get('timestamp', '')
+            ip = log.get('ip', '')
+            # 使用檔案名 + IP + 時間戳的前幾個字符作為會話識別
+            session_key = f"{filename}_{ip}_{timestamp[:16]}"
+        elif log.get('log_source') == 'app' and log.get('message'):
+            # 從應用程式日誌中提取檔案名
+            import re
+            filename_match = re.search(r'successful: ([^-]+)', log['message'])
+            if filename_match:
+                filename = filename_match.group(1).strip()
+                timestamp = log.get('timestamp', '')
+                # 嘗試從訊息中提取 IP
+                ip_match = re.search(r'User: ([\d.]+)', log['message'])
+                ip = ip_match.group(1) if ip_match else 'unknown'
+                session_key = f"{filename}_{ip}_{timestamp[:16]}"
         
-        # 統計魚類檢測數量
+        # 統計上傳 - 避免重複計算
+        if session_key:
+            action = log.get('action', '').lower()
+            message = log.get('message', '').lower()
+            
+            if (('upload' in action and ('start' in action or 'success' in action)) or \
+                'file_processing_success' in action or \
+                'api_processing_success' in action or \
+                'sample_image_usage' in action or \
+                'processing successful' in message) and \
+               session_key not in upload_sessions:
+                
+                stats['total_uploads'] += 1
+                upload_sessions.add(session_key)
+        
+        # 統計魚類檢測數量 - 處理用戶活動日誌
         if log.get('details') and 'fish_count' in log['details']:
             try:
                 fish_count = int(log['details']['fish_count'])
                 stats['total_fish'] += fish_count
             except ValueError:
                 pass
+        
+        # 統計魚類檢測數量 - 處理應用程式日誌
+        if log.get('log_source') == 'app' and log.get('message'):
+            # 解析 "Found X fish" 格式的訊息
+            fish_match = re.search(r'Found (\d+) fish', log['message'])
+            if fish_match:
+                try:
+                    fish_count = int(fish_match.group(1))
+                    stats['total_fish'] += fish_count
+                except ValueError:
+                    pass
+            
+            # 解析 "Processing time: X.XXs" 格式的處理時間
+            time_match = re.search(r'Processing time: ([\d.]+)s', log['message'])
+            if time_match:
+                try:
+                    time_seconds = float(time_match.group(1))
+                    processing_times.append(time_seconds)
+                except ValueError:
+                    pass
         
         # 統計處理時間
         if log.get('details') and 'processing_time_seconds' in log['details']:
@@ -279,9 +358,6 @@ def calculate_log_statistics(logs):
         stats['avg_processing_time'] = sum(processing_times) / len(processing_times)
     
     return stats
-
-# 初始化日誌系統
-app_logger, user_logger = setup_logging()
 
 def parse_app_logs(date_from='', date_to='', limit=200):
     """解析應用程式日誌"""

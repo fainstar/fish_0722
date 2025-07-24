@@ -1,0 +1,55 @@
+# 生產環境 Dockerfile
+FROM python:3.9-slim
+
+# 設置工作目錄
+WORKDIR /app
+
+# 設置環境變量
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=src/app_docker.py
+ENV FLASK_ENV=production
+ENV DOCKER_CONTAINER=true
+
+# 安裝系統依賴
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libgthread-2.0-0 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 複製 requirements.txt
+COPY requirements.txt .
+
+# 安裝 Python 依賴
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 複製應用程序代碼
+COPY . .
+
+# 創建必要的目錄
+RUN mkdir -p logs static/uploads static/processed data/output1
+
+# 設置權限
+RUN chmod -R 755 /app
+
+# 創建非 root 用戶
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# 暴露端口
+EXPOSE 5001
+
+# 健康檢查
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5001/ || exit 1
+
+# 使用 gunicorn 啟動（生產環境）
+CMD ["gunicorn", "--bind", "0.0.0.0:5001", "--workers", "2", "--timeout", "120", "src.app_docker:create_app()"]

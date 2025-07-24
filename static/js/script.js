@@ -122,8 +122,7 @@ function handleFormSubmit() {
         if (spinner) spinner.style.display = 'block';
         if (submitBtn) {
             submitBtn.disabled = true;
-            const processingText = spinner ? spinner.querySelector('p').textContent : t('processing');
-            submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${processingText}`;
+            submitBtn.innerHTML = `<span class="spinner-border text-white" role="status" aria-hidden="true" style="width: 1.5rem; height: 1.5rem;"></span> `;
         }
         
         // 使用 AJAX 提交表單
@@ -378,8 +377,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     fileInfo.innerHTML = `
                         <small class="text-muted">
                             ${t('file_name')}: ${file.name}<br>
-                            ${t('file_size')}: ${formatFileSize(file.size)}<br>
-                            ${t('file_type')}: ${file.type}
                         </small>
                     `;
                 }

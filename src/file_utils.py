@@ -4,8 +4,8 @@
 import os
 import shutil
 from werkzeug.utils import secure_filename
-from config import config
-from logger import app_logger
+from src.config import config
+from src.logger import app_logger
 
 def allowed_file(filename):
     """Check if the file extension is allowed."""
@@ -58,9 +58,25 @@ def save_uploaded_file(file, temp_dir):
 
 def move_processed_files(result, app_root_path):
     """將處理後的文件移動到最終目錄"""
-    processed_dir_abs = os.path.join(app_root_path, config.PROCESSED_FOLDER)
+    # 修正路徑問題：從 src 目錄運行時需要回到專案根目錄
+    if app_root_path.endswith('/src'):
+        project_root = os.path.dirname(app_root_path)
+    else:
+        project_root = app_root_path
+    
+    processed_dir_abs = os.path.join(project_root, config.PROCESSED_FOLDER)
+    
+    # 確保目標目錄存在
+    os.makedirs(processed_dir_abs, exist_ok=True)
+    
     final_output_path = os.path.join(processed_dir_abs, result['output_image'])
     final_resized_path = os.path.join(processed_dir_abs, result['resized_image'])
+    
+    # 檢查源文件是否存在
+    if not os.path.exists(result['output_image_path']):
+        raise FileNotFoundError(f"Source file not found: {result['output_image_path']}")
+    if not os.path.exists(result['resized_image_path']):
+        raise FileNotFoundError(f"Source file not found: {result['resized_image_path']}")
     
     shutil.move(result['output_image_path'], final_output_path)
     shutil.move(result['resized_image_path'], final_resized_path)
@@ -69,7 +85,13 @@ def move_processed_files(result, app_root_path):
 
 def create_sample_image_copy(app_root_path, temp_dir):
     """創建範例圖片副本"""
-    sample_image_path = os.path.join(app_root_path, 'static', 'demo', 'A.JPG')
+    # 修正路徑問題：從 src 目錄運行時需要回到專案根目錄
+    if app_root_path.endswith('/src'):
+        project_root = os.path.dirname(app_root_path)
+    else:
+        project_root = app_root_path
+    
+    sample_image_path = os.path.join(project_root, 'static', 'demo', 'A.JPG')
     if not os.path.exists(sample_image_path):
         return None, None, None
     

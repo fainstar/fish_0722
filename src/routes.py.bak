@@ -8,11 +8,11 @@ import uuid
 from datetime import datetime
 from flask import render_template, request, redirect, url_for, flash, send_from_directory, jsonify, session, g
 
-from config import config
-from logger import get_client_info, log_user_activity, app_logger, parse_user_activity_logs, calculate_log_statistics, get_combined_logs
-from translations_handler import get_text
-from fish_detector import FishDetectionSystem
-from file_utils import allowed_file, clean_processed_folder, get_file_size, save_uploaded_file, move_processed_files, create_sample_image_copy
+from src.config import config
+from src.logger import get_client_info, log_user_activity, get_app_logger, parse_user_activity_logs, calculate_log_statistics, get_combined_logs
+from src.translations_handler import get_text
+from src.fish_detector import FishDetectionSystem
+from src.file_utils import allowed_file, clean_processed_folder, get_file_size, save_uploaded_file, move_processed_files, create_sample_image_copy
 
 # 伺服器端暫存處理結果的地方
 RESULTS_CACHE = {}
@@ -32,13 +32,13 @@ def register_routes(app):
                 'old_language': session.get('language', 'default'),
                 'available_languages': list(config.LANGUAGES.keys())
             }, client_info)
-            app_logger.info(f"Language changed to {language} for user {client_info['ip_address']}")
+            get_app_logger().info(f"Language changed to {language} for user {client_info['ip_address']}")
         else:
             log_user_activity('invalid_language_attempt', {
                 'attempted_language': language,
                 'available_languages': list(config.LANGUAGES.keys())
             }, client_info)
-            app_logger.warning(f"Invalid language change attempt: {language} from {client_info['ip_address']}")
+            get_app_logger().warning(f"Invalid language change attempt: {language} from {client_info['ip_address']}")
         
         return redirect(request.referrer or url_for('index'))
 

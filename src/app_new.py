@@ -3,24 +3,39 @@ Fish Detection System - 主應用程式文件
 重構後的模組化架構
 """
 import uuid
+import os
 from flask import Flask, g, session, request
 from datetime import datetime
 
-# 導入自定義模塊
-from config import config
-from logger import setup_logging, app_logger, log_user_activity, get_client_info
-from translations_handler import set_language_context, get_template_context, load_translations
-from file_utils import clean_processed_folder
-from routes import register_routes
+# 獲取專案根目錄
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# 創建Flask應用
-app = Flask(__name__)
+# 導入自定義模塊
+from src.config import config
+from src.logger import setup_logging, get_app_logger, log_user_activity, get_client_info
+from src.translations_handler import set_language_context, get_template_context, load_translations
+from src.file_utils import clean_processed_folder
+from src.routes import register_routes
+
+# 創建Flask應用，指定正確的模板和靜態檔案路徑
+app = Flask(__name__, 
+           template_folder=os.path.join(BASE_DIR, 'templates'),
+           static_folder=os.path.join(BASE_DIR, 'static'))
 app.secret_key = config.SECRET_KEY
 
 # 配置應用
 app.config['PROCESSED_FOLDER'] = config.PROCESSED_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
 app.config['LANGUAGES'] = config.LANGUAGES
+
+# 確保必要的目錄存在
+processed_dir = os.path.join(BASE_DIR, config.PROCESSED_FOLDER)
+uploads_dir = os.path.join(BASE_DIR, 'static', 'uploads')
+demo_dir = os.path.join(BASE_DIR, 'static', 'demo')
+
+os.makedirs(processed_dir, exist_ok=True)
+os.makedirs(uploads_dir, exist_ok=True)
+os.makedirs(demo_dir, exist_ok=True)
 
 # 初始化日誌系統
 app_logger, user_logger = setup_logging()
@@ -53,7 +68,8 @@ def inject_template_context():
 # 註冊所有路由
 register_routes(app)
 
-if __name__ == '__main__':
+def main():
+    """主函數 - 啟動應用程式"""
     # 載入翻譯
     load_translations()
     
@@ -61,7 +77,10 @@ if __name__ == '__main__':
     clean_processed_folder()
     
     # 記錄應用啟動
-    app_logger.info("Fish Detection System started - Modular architecture")
+    get_app_logger().info("Fish Detection System started - Modular architecture")
     
     # 運行應用
     app.run(debug=True, port=5001)
+
+if __name__ == '__main__':
+    main()

@@ -8,7 +8,7 @@ from PIL import Image
 import requests
 import base64
 from pathlib import Path
-from config import config
+from src.config import config
 
 class FishDetectionSystem:
     def __init__(self, api_key=None):

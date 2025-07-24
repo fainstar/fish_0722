@@ -3,21 +3,30 @@
 {% block title %}{{ get_text('system_logs') }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
+<link href="{{ url_for('static', filename='css/logs.css') }}" rel="stylesheet">
+<div class="container-fluid mt-4" 
+     data-confirm-clear-logs="{{ get_text('confirm_clear_logs') }}"
+     data-logs-cleared-successfully="{{ get_text('logs_cleared_successfully') }}"
+     data-error-clearing-logs="{{ get_text('error_clearing_logs') }}"
+     data-today="{{ today }}">
+    <!-- 頁面標題和操作按鈕 -->
+    <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="text-sage">
-                    <i class="fas fa-chart-line me-2"></i>
-                    {{ get_text('system_logs') }}
-                </h1>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="text-sage mb-1">
+                        <i class="fas fa-chart-line me-2"></i>
+                        {{ get_text('system_logs') }}
+                    </h1>
+                    <p class="text-muted mb-0">{{ get_text('system_monitoring_dashboard') }}</p>
+                </div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-outline-sage" onclick="refreshLogs()">
-                        <i class="fas fa-sync-alt me-2"></i>{{ get_text('refresh') }}
+                        <i class="fas fa-sync-alt me-1"></i>{{ get_text('refresh') }}
                     </button>
                     {% if request.endpoint == 'admin_logs' %}
                     <button type="button" class="btn btn-outline-dusty-rose" onclick="clearLogs()">
-                        <i class="fas fa-trash me-2"></i>{{ get_text('clear_logs') }}
+                        <i class="fas fa-trash me-1"></i>{{ get_text('clear_logs') }}
                     </button>
                     {% endif %}
                 </div>
@@ -25,245 +34,245 @@
         </div>
     </div>
 
-    <!-- 統計卡片 -->
+    <!-- 統計概覽 -->
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-sage">
-                <div class="card-body text-center">
-                    <i class="fas fa-users fa-2x text-sage mb-2"></i>
-                    <h5 class="card-title">{{ get_text('total_users') }}</h5>
-                    <h3 class="text-sage">{{ stats.total_users }}</h3>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stats-icon bg-sage text-white rounded-circle me-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">{{ get_text('total_users') }}</h6>
+                        <h4 class="mb-0 text-sage fw-bold">{{ stats.total_users }}</h4>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-dusty-rose">
-                <div class="card-body text-center">
-                    <i class="fas fa-upload fa-2x text-dusty-rose mb-2"></i>
-                    <h5 class="card-title">{{ get_text('total_uploads') }}</h5>
-                    <h3 class="text-dusty-rose">{{ stats.total_uploads }}</h3>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stats-icon bg-dusty-rose text-white rounded-circle me-3">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">{{ get_text('total_uploads') }}</h6>
+                        <h4 class="mb-0 text-dusty-rose fw-bold">{{ stats.total_uploads }}</h4>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-taupe">
-                <div class="card-body text-center">
-                    <i class="fas fa-fish fa-2x text-taupe mb-2"></i>
-                    <h5 class="card-title">{{ get_text('total_fish_count') }}</h5>
-                    <h3 class="text-taupe">{{ stats.total_fish }}</h3>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stats-icon bg-taupe text-white rounded-circle me-3">
+                        <i class="fas fa-fish"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">{{ get_text('total_fish_count') }}</h6>
+                        <h4 class="mb-0 text-taupe fw-bold">{{ stats.total_fish }}</h4>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-lavender">
-                <div class="card-body text-center">
-                    <i class="fas fa-clock fa-2x text-lavender mb-2"></i>
-                    <h5 class="card-title">{{ get_text('avg_processing_time') }}</h5>
-                    <h3 class="text-lavender">{{ "%.1f"|format(stats.avg_processing_time) }}s</h3>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stats-icon bg-lavender text-white rounded-circle me-3">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">{{ get_text('avg_processing_time') }}</h6>
+                        <h4 class="mb-0 text-lavender fw-bold">{{ "%.1f"|format(stats.avg_processing_time) }}s</h4>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 篩選選項 -->
-    <div class="card mb-4">
-        <div class="card-header bg-light">
-            <h5 class="mb-0">
-                <i class="fas fa-filter me-2"></i>{{ get_text('filter_options') }}
-            </h5>
+    <!-- 篩選和日誌內容 -->
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <!-- 篩選面板 -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h6 class="mb-0 text-dark">
+                        <i class="fas fa-filter me-2"></i>{{ get_text('filter_options') }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="filterForm">
+                        <div class="mb-3">
+                            <label for="logType" class="form-label small fw-bold">{{ get_text('log_type') }}</label>
+                            <select class="form-select form-select-sm" id="logType" name="log_type">
+                                <option value="">{{ get_text('all_types') }}</option>
+                                <option value="page_visit">{{ get_text('page_visits') }}</option>
+                                <option value="file_upload">{{ get_text('file_uploads') }}</option>
+                                <option value="file_processing">{{ get_text('file_processing') }}</option>
+                                <option value="sample_usage">{{ get_text('sample_usage') }}</option>
+                                <option value="error">{{ get_text('errors') }}</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dateFrom" class="form-label small fw-bold">{{ get_text('date_from') }}</label>
+                            <input type="date" class="form-control form-control-sm" id="dateFrom" name="date_from" value="{{ today }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dateTo" class="form-label small fw-bold">{{ get_text('date_to') }}</label>
+                            <input type="date" class="form-control form-control-sm" id="dateTo" name="date_to" value="{{ today }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ipAddress" class="form-label small fw-bold">{{ get_text('ip_address') }}</label>
+                            <input type="text" class="form-control form-control-sm" id="ipAddress" name="ip_address" placeholder="{{ get_text('enter_ip_address') }}">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-sage btn-sm">
+                                <i class="fas fa-search me-1"></i>{{ get_text('apply_filter') }}
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetFilter()">
+                                <i class="fas fa-undo me-1"></i>{{ get_text('reset') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <form id="filterForm" class="row g-3">
-                <div class="col-md-3">
-                    <label for="logType" class="form-label">{{ get_text('log_type') }}</label>
-                    <select class="form-select" id="logType" name="log_type">
-                        <option value="">{{ get_text('all_types') }}</option>
-                        <option value="page_visit">{{ get_text('page_visits') }}</option>
-                        <option value="file_upload">{{ get_text('file_uploads') }}</option>
-                        <option value="file_processing">{{ get_text('file_processing') }}</option>
-                        <option value="sample_usage">{{ get_text('sample_usage') }}</option>
-                        <option value="error">{{ get_text('errors') }}</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="dateFrom" class="form-label">{{ get_text('date_from') }}</label>
-                    <input type="date" class="form-control" id="dateFrom" name="date_from" value="{{ today }}">
-                </div>
-                <div class="col-md-3">
-                    <label for="dateTo" class="form-label">{{ get_text('date_to') }}</label>
-                    <input type="date" class="form-control" id="dateTo" name="date_to" value="{{ today }}">
-                </div>
-                <div class="col-md-3">
-                    <label for="ipAddress" class="form-label">{{ get_text('ip_address') }}</label>
-                    <input type="text" class="form-control" id="ipAddress" name="ip_address" placeholder="{{ get_text('enter_ip_address') }}">
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-sage">
-                        <i class="fas fa-search me-2"></i>{{ get_text('apply_filter') }}
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary ms-2" onclick="resetFilter()">
-                        <i class="fas fa-undo me-2"></i>{{ get_text('reset') }}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- 日誌表格 -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-                <i class="fas fa-list me-2"></i>{{ get_text('activity_logs') }}
-            </h5>
-            <small class="text-muted">{{ get_text('showing_recent_logs', count=logs|length) }}</small>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>{{ get_text('timestamp') }}</th>
-                            <th>{{ get_text('log_source') }}</th>
-                            <th>{{ get_text('action') }}</th>
-                            <th>{{ get_text('ip_address') }}</th>
-                            <th>{{ get_text('device_info') }}</th>
-                            <th>{{ get_text('details') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logsTableBody">
+        <div class="col-lg-9">
+            <!-- 日誌時間線 -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 text-dark">
+                        <i class="fas fa-stream me-2"></i>{{ get_text('activity_timeline') }}
+                    </h6>
+                    <small class="text-muted">{{ get_text('showing_recent_logs', count=logs|length) }}</small>
+                </div>
+                <div class="card-body p-0 timeline-container">
+                    {% if logs %}
+                    <div class="timeline">
                         {% for log in logs %}
-                        <tr>
-                            <td>
-                                <small class="text-muted">{{ log.timestamp }}</small>
-                            </td>
-                            <td>
+                        <div class="timeline-item {% if log.log_source == 'app' %}app-log{% else %}user-log{% endif %}">
+                            <div class="timeline-marker">
                                 {% if log.log_source == 'app' %}
-                                    <span class="badge bg-warning">{{ get_text('app_log') }}</span>
+                                    <i class="fas fa-cog text-warning"></i>
                                 {% else %}
-                                    <span class="badge bg-primary">{{ get_text('user_activity') }}</span>
+                                    <i class="fas fa-user text-primary"></i>
                                 {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge {% if 'error' in log.get('action', '') %}bg-danger{% elif 'success' in log.get('action', '') %}bg-success{% elif 'upload' in log.get('action', '') %}bg-primary{% else %}bg-info{% endif %}">
-                                    {{ log.get('action', 'N/A') }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if log.log_source == 'app' %}
-                                    <small class="text-muted">{{ get_text('from_app_log') }}</small>
-                                {% else %}
-                                    <code>{{ log.get('ip', 'N/A') }}</code>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if log.log_source == 'app' %}
-                                    <div class="small text-muted">
-                                        {{ get_text('system_log_entry') }}
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-header d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="timeline-title mb-1">
+                                            {% if log.log_source == 'app' %}
+                                                <span class="badge bg-warning text-dark me-2">{{ get_text('system') }}</span>
+                                            {% else %}
+                                                <span class="badge bg-primary me-2">{{ get_text('user_activity') }}</span>
+                                            {% endif %}
+                                            {{ log.get('action', get_text('system_event')) }}
+                                        </h6>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>{{ log.timestamp }}
+                                            {% if log.get('ip') %}
+                                                <i class="fas fa-map-marker-alt ms-2 me-1"></i>{{ log.ip }}
+                                            {% endif %}
+                                        </small>
                                     </div>
-                                {% else %}
-                                    <div class="small">
-                                        <div><strong>{{ get_text('browser') }}:</strong> {{ log.get('browser', 'N/A') }}</div>
-                                        <div><strong>{{ get_text('os') }}:</strong> {{ log.get('os', 'N/A') }}</div>
-                                        <div><strong>{{ get_text('device') }}:</strong> {{ log.get('device', 'N/A') }} 
-                                            {% if log.get('is_mobile') %}
-                                                <span class="badge bg-secondary">{{ get_text('mobile') }}</span>
+                                </div>
+                                
+                                <div class="timeline-body mt-2">
+                                    {% if log.log_source == 'app' %}
+                                        <!-- 應用程式日誌內容 -->
+                                        <div class="app-log-content">
+                                            {% if log.get('message') %}
+                                                <p class="mb-2 text-dark">{{ log.message }}</p>
+                                            {% endif %}
+                                            {% if log.get('level') %}
+                                                <span class="badge {% if log.level == 'ERROR' %}bg-danger{% elif log.level == 'WARNING' %}bg-warning text-dark{% else %}bg-info{% endif %}">
+                                                    {{ log.level }}
+                                                </span>
                                             {% endif %}
                                         </div>
-                                    </div>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="small">
-                                    {% if log.log_source == 'app' %}
-                                        <div><strong>{{ get_text('message') }}:</strong> {{ log.get('message', '') }}</div>
-                                        <div><strong>{{ get_text('level') }}:</strong> 
-                                            <span class="badge {% if log.get('level') == 'ERROR' %}bg-danger{% elif log.get('level') == 'WARNING' %}bg-warning{% else %}bg-info{% endif %}">
-                                                {{ log.get('level', 'INFO') }}
-                                            </span>
-                                        </div>
                                     {% else %}
-                                        {% if log.get('details') %}
-                                            {% for key, value in log.details.items() %}
-                                                <div><strong>{{ key }}:</strong> {{ value }}</div>
-                                            {% endfor %}
-                                        {% endif %}
+                                        <!-- 用戶活動日誌內容 -->
+                                        <div class="user-log-content">
+                                            {% if log.get('browser') or log.get('os') %}
+                                                <div class="row text-small mb-2">
+                                                    {% if log.get('browser') %}
+                                                        <div class="col-md-6">
+                                                            <i class="fab fa-chrome me-1 text-muted"></i>
+                                                            <span class="text-muted">{{ log.browser }}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if log.get('os') %}
+                                                        <div class="col-md-6">
+                                                            <i class="fas fa-desktop me-1 text-muted"></i>
+                                                            <span class="text-muted">{{ log.os }}</span>
+                                                            {% if log.get('is_mobile') %}
+                                                                <span class="badge bg-secondary ms-1">{{ get_text('mobile') }}</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                            
+                                            {% if log.get('details') %}
+                                                <div class="details-grid">
+                                                    {% for key, value in log.details.items() %}
+                                                        <div class="detail-item">
+                                                            <span class="detail-key">{{ key }}:</span>
+                                                            <span class="detail-value">{{ value }}</span>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
                                     {% endif %}
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                         {% endfor %}
-                    </tbody>
-                </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">{{ get_text('no_logs_found') }}</h5>
+                        <p class="text-muted">{{ get_text('no_logs_description') }}</p>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
 
-    {% if not logs %}
-    <div class="text-center mt-4">
-        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-        <h4 class="text-muted">{{ get_text('no_logs_found') }}</h4>
-        <p class="text-muted">{{ get_text('no_logs_description') }}</p>
-    </div>
-    {% endif %}
-
     <!-- 訪問說明 -->
-    <div class="alert alert-info mt-4">
-        <h6><i class="fas fa-info-circle me-2"></i>{{ get_text('access_info') }}</h6>
-        <ul class="mb-0">
-            <li><strong>{{ get_text('simple_access') }}:</strong> <code>http://127.0.0.1:5001/log</code> - {{ get_text('view_only_access') }}</li>
-            <li><strong>{{ get_text('admin_access') }}:</strong> <code>http://127.0.0.1:5001/admin/logs?admin_key=fish_admin_2023</code> - {{ get_text('full_admin_access') }}</li>
-        </ul>
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-primary mb-3">
+                        <i class="fas fa-info-circle me-2"></i>{{ get_text('access_info') }}
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="access-info-item">
+                                <h6 class="fw-bold">{{ get_text('simple_access') }}</h6>
+                                <p class="mb-1"><code>http://127.0.0.1:5001/log</code></p>
+                                <small class="text-muted">{{ get_text('view_only_access') }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="access-info-item">
+                                <h6 class="fw-bold">{{ get_text('admin_access') }}</h6>
+                                <p class="mb-1"><code>http://127.0.0.1:5001/admin/logs?admin_key=fish_admin_2023</code></p>
+                                <small class="text-muted">{{ get_text('full_admin_access') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<script>
-function refreshLogs() {
-    location.reload();
-}
-
-function clearLogs() {
-    if (confirm('{{ get_text("confirm_clear_logs") }}')) {
-        fetch('/admin/clear-logs', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Admin-Key': 'fish_admin_2023'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('{{ get_text("logs_cleared_successfully") }}');
-                location.reload();
-            } else {
-                alert('{{ get_text("error_clearing_logs") }}');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('{{ get_text("error_clearing_logs") }}');
-        });
-    }
-}
-
-function resetFilter() {
-    document.getElementById('filterForm').reset();
-    document.getElementById('dateFrom').value = '{{ today }}';
-    document.getElementById('dateTo').value = '{{ today }}';
-}
-
-document.getElementById('filterForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const params = new URLSearchParams(formData);
-    
-    // 根據當前路由決定跳轉目標
-    const currentPath = window.location.pathname;
-    if (currentPath.includes('/admin/logs')) {
-        window.location.href = '/admin/logs?admin_key=fish_admin_2023&' + params.toString();
-    } else {
-        window.location.href = '/log?' + params.toString();
-    }
-});
-</script>
+<script src="{{ url_for('static', filename='js/logs.js') }}"></script>
 {% endblock %}
