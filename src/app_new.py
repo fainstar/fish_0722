@@ -80,7 +80,7 @@ def main():
     get_app_logger().info("Fish Detection System started - Modular architecture")
     
     # 運行應用
-    app.run(debug=True, port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5001)
 
 if __name__ == '__main__':
     main()

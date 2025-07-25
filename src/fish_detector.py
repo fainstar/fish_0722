@@ -10,6 +10,17 @@ import base64
 from pathlib import Path
 from src.config import config
 
+# 檢查是否為本地API
+local_indicators = [
+    "127.0.0.1",
+    "localhost",
+    "0.0.0.0",
+    "::1",  # IPv6 localhost
+    "192.168.",  # 區網內常用
+    "10.",       # 內網 IP（像 Docker bridge）
+    "172.16.", "172.17.", "172.18.", "172.19.", "172.20.", "172.21.", "172.22.", "172.23.", "172.24.", "172.25.", "172.26.", "172.27.", "172.28.", "172.29.", "172.30.", "172.31.",
+    "49.213.238.86"  # 你自己提到的特殊 case
+]
 class FishDetectionSystem:
     def __init__(self, api_key=None, endpoint_name='detect_count_visualize', model_key=None):
         self.api_key = api_key or config.ROBOFLOW_API_KEY
@@ -70,15 +81,15 @@ class FishDetectionSystem:
     def detect_fish_api(self, image_path, confidence=None):
         """使用 Roboflow API 進行魚類偵測"""
         headers = {'Content-Type': 'application/json'}
-        
+
         # 使用配置中的預設參數，並允許覆蓋
         params = self.default_params.copy()
         if confidence is not None:
             params['confidence'] = confidence
-        
-        # 根據API端點類型構建不同的payload格式
-        if "127.0.0.1" in self.api_url or "localhost" in self.api_url:
-            # 本地API：使用原始圖片，不壓縮
+
+      
+        # 本地API：使用原始圖片，不壓縮
+        if any(self.api_url.startswith(f"http://{prefix}") or self.api_url.startswith(f"https://{prefix}") for prefix in local_indicators):
             image_base64 = self.image_to_base64(image_path)
             payload = {
                 "image": image_base64,

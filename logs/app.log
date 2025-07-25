@@ -20,3 +20,92 @@
 2025-07-25 12:48:16 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
 2025-07-25 12:48:19 - INFO - Model changed to high_accuracy (Mac_LIN) for user 127.0.0.1
 2025-07-25 12:48:20 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 127.0.0.1
+2025-07-25 13:46:04 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 13:46:06 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 13:46:18 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 127.0.0.1
+2025-07-25 13:46:33 - INFO - API processing successful: A.JPG - Found 111 fish - Processing time: 10.01s - User: 127.0.0.1
+2025-07-25 13:46:33 - INFO - Result page viewed: 90ee7ce7-8bb8-44d1-aad1-dac495ee3144 - Fish count: 111 - User: 127.0.0.1
+2025-07-25 13:48:05 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 13:48:06 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 13:48:11 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 127.0.0.1
+2025-07-25 13:48:13 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 13:48:20 - ERROR - API processing error: A.JPG - 422 Client Error: Unprocessable Entity for url: http://49.213.238.86:8000/detect/simple - User: 127.0.0.1
+2025-07-25 14:06:32 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:06:34 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:07:01 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 14:07:18 - ERROR - API processing error: A.JPG - 422 Client Error: Unprocessable Entity for url: http://192.168.0.12:8000/detect/simple - User: 127.0.0.1
+2025-07-25 14:15:09 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:15:11 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:15:16 - INFO - New user session started for 192.168.0.12
+2025-07-25 14:15:19 - INFO - Model changed to detect_count_visualize (RoboFlow) for user 192.168.0.12
+2025-07-25 14:15:24 - INFO - Model changed to high_accuracy (Mac_LIN) for user 192.168.0.12
+2025-07-25 14:16:59 - ERROR - API processing error: A.JPG - HTTPConnectionPool(host='49.213.238.86', port=8000): Max retries exceeded with url: /detect/simple (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x14846cb80>, 'Connection to 49.213.238.86 timed out. (connect timeout=30)')) - User: 192.168.0.12
+2025-07-25 14:17:07 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 14:17:11 - ERROR - API processing error: A.JPG - 422 Client Error: Unprocessable Entity for url: http://192.168.0.12:8000/detect/simple - User: 192.168.0.12
+2025-07-25 14:18:01 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:18:02 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:18:12 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 14:18:24 - ERROR - API processing error: A.JPG - 422 Client Error: Unprocessable Entity for url: http://192.168.0.12:8000/detect/simple - User: 192.168.0.12
+2025-07-25 14:18:29 - INFO - Model changed to high_accuracy (Mac_LIN) for user 192.168.0.12
+2025-07-25 14:18:34 - INFO - API processing successful: A.JPG - Found 76 fish - Processing time: 3.91s - User: 192.168.0.12
+2025-07-25 14:18:34 - INFO - Result page viewed: 18c27d6f-91dc-404b-b756-2f98cee74613 - Fish count: 76 - User: 192.168.0.12
+2025-07-25 14:24:45 - INFO - Model changed to high_accuracy (Mac_LIN) for user 192.168.0.12
+2025-07-25 14:24:56 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 192.168.0.12
+2025-07-25 14:24:58 - INFO - Model changed to high_accuracy (Mac_LIN) for user 192.168.0.12
+2025-07-25 14:25:03 - INFO - API processing successful: A.JPG - Found 76 fish - Processing time: 2.01s - User: 192.168.0.12
+2025-07-25 14:25:03 - INFO - Result page viewed: 9265617c-83a6-43e0-9d35-15891216b24b - Fish count: 76 - User: 192.168.0.12
+2025-07-25 14:25:38 - INFO - Model changed to high_accuracy (Mac_LIN) for user 192.168.0.12
+2025-07-25 14:25:42 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 14:25:46 - ERROR - API processing error: A.JPG - 422 Client Error: Unprocessable Entity for url: http://192.168.0.12:8000/detect/simple - User: 192.168.0.12
+2025-07-25 14:26:55 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:26:55 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:27:01 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 14:27:13 - INFO - API processing successful: A.JPG - Found 70 fish - Processing time: 2.53s - User: 192.168.0.12
+2025-07-25 14:27:14 - INFO - Result page viewed: 1c2f0b95-79e3-4d20-8815-53c40fb455f6 - Fish count: 70 - User: 192.168.0.12
+2025-07-25 14:27:20 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 14:27:23 - INFO - Model changed to high_accuracy (Mac_LIN) for user 192.168.0.12
+2025-07-25 14:27:27 - ERROR - API processing error: A.JPG - 422 Client Error: Unprocessable Entity for url: http://192.168.0.12:8000/detect/simple - User: 192.168.0.12
+2025-07-25 14:30:59 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:31:00 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:31:23 - INFO - Model changed to high_accuracy (Mac_LIN) for user 192.168.0.12
+2025-07-25 14:31:52 - ERROR - API processing error: A.JPG - name 'local_indicators' is not defined - User: 192.168.0.12
+2025-07-25 14:32:17 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 14:32:20 - ERROR - API processing error: A.JPG - name 'local_indicators' is not defined - User: 192.168.0.12
+2025-07-25 14:32:20 - ERROR - API processing error: A.JPG - name 'local_indicators' is not defined - User: 192.168.0.12
+2025-07-25 14:32:21 - ERROR - API processing error: A.JPG - name 'local_indicators' is not defined - User: 192.168.0.12
+2025-07-25 14:32:21 - ERROR - API processing error: A.JPG - name 'local_indicators' is not defined - User: 192.168.0.12
+2025-07-25 14:32:21 - ERROR - API processing error: A.JPG - name 'local_indicators' is not defined - User: 192.168.0.12
+2025-07-25 14:32:21 - ERROR - API processing error: A.JPG - name 'local_indicators' is not defined - User: 192.168.0.12
+2025-07-25 14:33:00 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:33:00 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:33:04 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 14:33:09 - ERROR - API processing error: A.JPG - name 'local_indicators' is not defined - User: 192.168.0.12
+2025-07-25 14:34:33 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:34:40 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:34:42 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:35:35 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:35:35 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:35:43 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 14:35:49 - INFO - API processing successful: A.JPG - Found 70 fish - Processing time: 1.45s - User: 192.168.0.12
+2025-07-25 14:35:49 - INFO - Result page viewed: 098eacd5-0c2f-4f25-a484-3d7252652204 - Fish count: 70 - User: 192.168.0.12
+2025-07-25 14:37:45 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 192.168.0.12
+2025-07-25 14:39:43 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:39:43 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:39:46 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 192.168.0.12
+2025-07-25 14:39:56 - ERROR - API processing error: A.JPG - 422 Client Error: Unprocessable Entity for url: http://49.213.238.86:8000/detect/simple - User: 192.168.0.12
+2025-07-25 14:40:08 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:40:22 - INFO - API processing successful: A.JPG - Found 111 fish - Processing time: 8.87s - User: 192.168.0.12
+2025-07-25 14:40:22 - INFO - Result page viewed: 0e56fb12-799b-4e1e-9d2a-3341f4d02f0c - Fish count: 111 - User: 192.168.0.12
+2025-07-25 14:41:04 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:41:04 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 14:41:08 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 192.168.0.12
+2025-07-25 14:41:15 - INFO - API processing successful: A.JPG - Found 111 fish - Processing time: 4.06s - User: 192.168.0.12
+2025-07-25 14:41:15 - INFO - Result page viewed: 79e73ba7-dd1f-49d6-b538-c19280d7eb46 - Fish count: 111 - User: 192.168.0.12
+2025-07-25 14:41:22 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 192.168.0.12
+2025-07-25 14:41:26 - INFO - Model changed to high_accuracy (Mac_LIN) for user 192.168.0.12
+2025-07-25 14:41:30 - INFO - API processing successful: A.JPG - Found 76 fish - Processing time: 3.60s - User: 192.168.0.12
+2025-07-25 14:41:30 - INFO - Result page viewed: 49580390-d012-4409-ad8d-c631d88902dd - Fish count: 76 - User: 192.168.0.12
+2025-07-25 14:41:36 - INFO - Model changed to high_accuracy (Mac_LIN) for user 192.168.0.12
+2025-07-25 14:41:39 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 14:41:44 - INFO - API processing successful: A.JPG - Found 70 fish - Processing time: 3.94s - User: 192.168.0.12
+2025-07-25 14:41:45 - INFO - Result page viewed: 747b9f7f-a993-43c3-a9fd-45f705a689a2 - Fish count: 70 - User: 192.168.0.12
