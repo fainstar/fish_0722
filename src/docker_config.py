@@ -5,7 +5,7 @@ import os
 
 class DockerConfig:
     # 基本配置
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'docker-fish-detection-2024-secure-key')
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'your_docker_default_secret_key') # 确保在生产环境中通过环境变量设置此值
     
     # 語言設定
     LANGUAGES = {

@@ -9,15 +9,14 @@ services:
     ports:
       - "5001:5001"
     volumes:
-      # 持久化日誌
       - ./logs:/app/logs
-      # 持久化上傳和處理的圖片
       - ./static/uploads:/app/static/uploads
       - ./static/processed:/app/static/processed
       - ./data:/app/data
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
+      - SECRET_KEY=your_development_secret_key_here # 请替换为一个强密码
     restart: unless-stopped
     networks:
       - fish-detection-network

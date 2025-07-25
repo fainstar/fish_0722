@@ -59,6 +59,7 @@
   "model_description": "Model Description",
   "current_model": "Current Model",
   "model_changed_success": "Model successfully changed to: {model_name}",
+   "language": "Language",
   "model_change_failed": "Model change failed, please try again later",
   "invalid_model_selection": "Invalid model selection",
   "model_info": "Model Information",

@@ -29,6 +29,7 @@ def create_app():
                template_folder=os.path.join(BASE_DIR, 'templates'),
                static_folder=os.path.join(BASE_DIR, 'static'))
     app.secret_key = config.SECRET_KEY
+    print(f"DEBUG: Flask app secret_key is set to: {app.secret_key}") # Add this line for debugging
     app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
     
      # 💡 進入 app context 再設置 jinja template 的 global context

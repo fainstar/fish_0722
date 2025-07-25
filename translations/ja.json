@@ -59,6 +59,7 @@
   "model_description": "モデル説明",
   "current_model": "現在のモデル",
   "model_changed_success": "モデルが正常に変更されました：{model_name}",
+   "language": "言語",
   "model_change_failed": "モデルの変更に失敗しました、後でもう一度お試しください",
   "invalid_model_selection": "無効なモデル選択",
   "model_info": "モデル情報",

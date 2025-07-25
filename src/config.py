@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Flask 應用程式配置
 class Config:
-    SECRET_KEY = 'fish_detection_secret_key_2023'
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'your_local_default_secret_key') # 确保在生产环境中通过环境变量设置此值
     
     # 語言配置
     LANGUAGES = {

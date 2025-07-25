@@ -59,6 +59,7 @@
   "model_description": "模型說明",
   "current_model": "目前使用模型",
   "model_changed_success": "模型已成功切換至：{model_name}",
+   "language": "語言",
   "model_change_failed": "模型切換失敗，請稍後重試",
   "invalid_model_selection": "無效的模型選擇",
   "model_info": "模型資訊",

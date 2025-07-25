@@ -24,15 +24,7 @@
                 
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="languageMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                        {% if current_language == 'zh' %}
-                            🇹🇼 {{ get_text('zh') }}
-                        {% elif current_language == 'en' %}
-                            🇺🇸 {{ get_text('en') }}
-                        {% elif current_language == 'ja' %}
-                            🇯🇵 {{ get_text('ja') }}
-                        {% else %}
-                            🌐 {{ get_text(current_language or 'zh') }}
-                        {% endif %}
+                        🌐 
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="languageMenuButton">
                         <li><a class="dropdown-item" href="{{ url_for('set_language', language='zh') }}">🇹🇼 {{ get_text('zh') }}</a></li>
