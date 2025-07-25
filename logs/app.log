@@ -3,3 +3,20 @@
 2025-07-25 10:52:07 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 127.0.0.1
 2025-07-25 10:52:18 - INFO - API processing successful: A.JPG - Found 111 fish - Processing time: 7.87s - User: 127.0.0.1
 2025-07-25 10:52:19 - INFO - Result page viewed: 771db742-af78-446a-86a1-1f4381ece90a - Fish count: 111 - User: 127.0.0.1
+2025-07-25 12:27:47 - WARNING - Result not found in cache: 771db742-af78-446a-86a1-1f4381ece90a - User: 127.0.0.1
+2025-07-25 12:27:48 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 127.0.0.1
+2025-07-25 12:27:49 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 127.0.0.1
+2025-07-25 12:27:51 - INFO - Model changed to high_accuracy (Mac_LIN) for user 127.0.0.1
+2025-07-25 12:27:55 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 12:27:56 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 12:27:58 - INFO - Model changed to high_accuracy (Mac_LIN) for user 127.0.0.1
+2025-07-25 12:28:00 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 12:28:07 - ERROR - API processing error: A.JPG - 400 Client Error: Bad Request for url: http://127.0.0.1:8000/detect/simple - User: 127.0.0.1
+2025-07-25 12:28:38 - ERROR - API processing error: A.JPG - 500 Server Error: Internal Server Error for url: http://127.0.0.1:8000/detect/simple - User: 127.0.0.1
+2025-07-25 12:47:43 - ERROR - API processing error: A.JPG - 500 Server Error: Internal Server Error for url: http://127.0.0.1:8000/detect/simple - User: 127.0.0.1
+2025-07-25 12:48:02 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 12:48:08 - INFO - API processing successful: A.JPG - Found 70 fish - Processing time: 3.57s - User: 127.0.0.1
+2025-07-25 12:48:08 - INFO - Result page viewed: aff36b68-6a38-489e-8cee-ddf4464ea4ed - Fish count: 70 - User: 127.0.0.1
+2025-07-25 12:48:16 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 12:48:19 - INFO - Model changed to high_accuracy (Mac_LIN) for user 127.0.0.1
+2025-07-25 12:48:20 - INFO - Model changed to fast_detection (RTX4000_Lab) for user 127.0.0.1

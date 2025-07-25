@@ -14,7 +14,7 @@
       "fast_detection": {
         "name": "RTX4000_Lab",
         "description": "Use FIT Lab",
-        "url": "http://127.0.0.1:8000/detect/simple",
+        "url": "http://host.docker.internal:8000/detect/simple",
         "model_id": "final",
         "version": "2025-07-24",
         "accuracy": "✪ ✪ ✪ ✪ ✪",
@@ -23,8 +23,17 @@
       "high_accuracy": {
         "name": "Mac_LIN",
         "description": "by lin,yolov8",
-        "url": "http://127.0.0.1:8000/detect/simple",
+        "url": "http://host.docker.internal:8000/detect/simple",
         "model_id": "lin",
+        "version": "2025-07-24",
+        "accuracy": "✪ ✪ ✪ ○ ○",
+        "speed": "✪ ✪ ✪ ✪ ✪"
+      },
+      "high_accuracy2": {
+        "name": "Colab_Cheng",
+        "description": "by lin,yolov8",
+        "url": "http://host.docker.internal:8000/detect/simple",
+        "model_id": "cheng",
         "version": "2025-07-24",
         "accuracy": "✪ ✪ ✪ ○ ○",
         "speed": "✪ ✪ ✪ ✪ ✪"
