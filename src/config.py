@@ -93,6 +93,38 @@ class Config:
         if hasattr(self, 'api_config'):
             return self.api_config.get('roboflow', {}).get('default_parameters', {})
         return {'confidence': 0.5, 'overlap': 0.3, 'format': 'json'}
+    
+    def get_available_models(self):
+        """獲取所有可用的模型選項"""
+        if hasattr(self, 'api_config'):
+            endpoints = self.api_config.get('roboflow', {}).get('endpoints', {})
+            models = {}
+            for key, config in endpoints.items():
+                models[key] = {
+                    'name': config.get('name', key),
+                    'description': config.get('description', ''),
+                    'accuracy': config.get('accuracy', '未知'),
+                    'speed': config.get('speed', '未知'),
+                    'version': config.get('version', 'v1.0')
+                }
+            return models
+        return {}
+    
+    def get_model_config(self, model_key='detect_count_visualize'):
+        """根據模型鍵值獲取完整的模型配置"""
+        if hasattr(self, 'api_config'):
+            endpoints = self.api_config.get('roboflow', {}).get('endpoints', {})
+            return endpoints.get(model_key, endpoints.get('detect_count_visualize', {}))
+        return {}
+    
+    def set_active_model(self, model_key):
+        """設置當前活躍的模型"""
+        model_config = self.get_model_config(model_key)
+        if model_config:
+            self.ROBOFLOW_API_URL = model_config.get('url', '')
+            self.ROBOFLOW_MODEL_ID = model_config.get('model_id', '')
+            return True
+        return False
 
 # 創建配置實例
 config = Config()

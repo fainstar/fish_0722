@@ -6,11 +6,16 @@
     <h1 class="mb-3"><i class="fas fa-check-circle text-sage"></i> {{ get_text('detection_results') }}</h1>
 
     <!-- Processed Image -->
-    <div class="mb-4">
-        <img src="{{ url_for('static', filename='processed/' + result.output_image) }}" 
-             class="img-fluid rounded shadow-sm result-image" 
-             alt="{{ get_text('detected_image_alt') }}">
-    </div>
+            <div class="col-md-12 text-center">
+            <h3>{{ get_text('detection_results') }}</h3>
+            <p><small class="text-muted">{{ get_text('click_to_enlarge') }}</small></p>
+            <img id="resultImage" src="{{ url_for('static', filename='processed/' + result.output_image) }}" 
+                 class="img-fluid" alt="{{ get_text('processed_image') }}" 
+                 style="max-width: 100%; height: auto; cursor: pointer; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s ease;" 
+                 data-bs-toggle="modal" data-bs-target="#imageModal"
+                 onmouseover="this.style.transform='scale(1.02)'" 
+                 onmouseout="this.style.transform='scale(1)'">
+        </div>
 
     <!-- Detection Info -->
     <div class="info-card mb-4 info-card-centered">
@@ -28,6 +33,14 @@
                 {{ get_text('confidence_threshold') }}
                 <span class="badge bg-info rounded-pill">{{ result.confidence }}</span>
             </li>
+            {% if result.model_used %}
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                {{ get_text('detection_model') }}
+                <span class="badge bg-success rounded-pill" title="{{ result.model_used.model_id }}">
+                    {{ result.model_used.name }}
+                </span>
+            </li>
+            {% endif %}
         </ul>
     </div>
 
@@ -36,7 +49,7 @@
         <a href="{{ url_for('download_file', filename=result.output_image) }}" class="btn btn-primary">
             <i class="fas fa-download text-white"></i> {{ get_text('download_result_image') }}
         </a>
-        <a href="{{ url_for('download_file', filename=result.resized_image) }}" class="btn btn-secondary">
+        <a href="{{ url_for('download_file', filename=result.used_image) }}" class="btn btn-secondary">
             <i class="fas fa-download text-white"></i> {{ get_text('download_resized_image') }}
         </a>
         <a href="{{ url_for('index') }}" class="btn btn-outline">
@@ -69,7 +82,55 @@
     {% endif %}
 </div>
 
-<!-- Modal -->
+<!-- Image Zoom Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bg-dark">
+            <div class="modal-header bg-dark text-light border-secondary">
+                <h5 class="modal-title" id="imageModalLabel">{{ get_text('detection_results') }} - {{ get_text('enlarged_view') }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-dark d-flex align-items-center justify-content-center p-0" id="imageContainer">
+                <div class="text-center w-100 h-100 d-flex flex-column align-items-center justify-content-center position-relative" style="overflow: hidden;">
+                    <img id="zoomableImage" src="{{ url_for('static', filename='processed/' + result.output_image) }}" 
+                         class="img-fluid" 
+                         alt="{{ get_text('detected_image_alt') }}"
+                         style="max-height: 85vh; max-width: 100%; width: auto; height: auto; object-fit: contain; cursor: grab; transition: transform 0.1s ease; transform-origin: center center;">
+                    <small class="text-muted mt-2" style="position: absolute; bottom: 80px; z-index: 10;">
+                        <i class="fas fa-info-circle me-1"></i>
+                        {{ get_text('fullscreen_hint') }}
+                    </small>
+                    <div id="zoomIndicator" style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 8px 12px; border-radius: 4px; font-size: 14px; z-index: 10; display: none;">
+                        <i class="fas fa-search-plus me-1"></i>
+                        <span id="zoomLevel">100%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-dark border-secondary">
+                <div class="d-flex justify-content-between w-100 align-items-center">
+                    <div class="text-light">
+                        <small>
+                            <i class="fas fa-info-circle me-1"></i>
+                            {{ get_text('total_fish_detected') }}: <strong>{{ result.fish_count }}</strong> | 
+                            {{ get_text('confidence_threshold') }}: <strong>{{ result.confidence }}</strong>
+                        </small>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('download_file', filename=result.output_image) }}" 
+                           class="btn btn-primary btn-sm me-2">
+                            <i class="fas fa-download"></i> {{ get_text('download') }}
+                        </a>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> {{ get_text('close') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fish Details Modal -->
 <div class="modal fade" id="fishModal" tabindex="-1" aria-labelledby="fishModalLabel" aria-hidden="true" data-fish-text="{{ get_text('fish') }}">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -99,4 +160,202 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/result.js') }}"></script>
+<script>
+// 全螢幕圖片查看器增強功能
+document.addEventListener('DOMContentLoaded', function() {
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('zoomableImage');
+    const imageContainer = document.getElementById('imageContainer');
+    const zoomIndicator = document.getElementById('zoomIndicator');
+    const zoomLevel = document.getElementById('zoomLevel');
+    
+    let scale = 1;
+    let translateX = 0;
+    let translateY = 0;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let lastX = 0;
+    let lastY = 0;
+    let zoomTimeout;
+    
+    // 顯示縮放指示器
+    function showZoomIndicator() {
+        zoomIndicator.style.display = 'block';
+        zoomLevel.textContent = Math.round(scale * 100) + '%';
+        
+        clearTimeout(zoomTimeout);
+        zoomTimeout = setTimeout(() => {
+            if (scale === 1) {
+                zoomIndicator.style.display = 'none';
+            }
+        }, 2000);
+    }
+    
+    // 重置縮放和位置
+    function resetTransform() {
+        scale = 1;
+        translateX = 0;
+        translateY = 0;
+        updateTransform();
+        zoomIndicator.style.display = 'none';
+    }
+    
+    // 更新圖片變換
+    function updateTransform() {
+        modalImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        modalImage.style.cursor = scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'grab';
+        showZoomIndicator();
+    }
+    
+    // 當 modal 顯示時，隱藏背景滾動並重置縮放
+    imageModal.addEventListener('show.bs.modal', function() {
+        document.body.style.overflow = 'hidden';
+        resetTransform();
+    });
+    
+    // 當 modal 隱藏時，恢復背景滾動
+    imageModal.addEventListener('hide.bs.modal', function() {
+        document.body.style.overflow = 'auto';
+        resetTransform();
+    });
+    
+    // 滑鼠滾輪縮放
+    modalImage.addEventListener('wheel', function(event) {
+        event.preventDefault();
+        
+        const rect = modalImage.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left - rect.width / 2;
+        const mouseY = event.clientY - rect.top - rect.height / 2;
+        
+        const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+        const newScale = Math.min(Math.max(0.5, scale * zoomFactor), 5);
+        
+        if (newScale !== scale) {
+            const scaleChange = newScale / scale;
+            translateX = translateX * scaleChange + mouseX * (1 - scaleChange);
+            translateY = translateY * scaleChange + mouseY * (1 - scaleChange);
+            scale = newScale;
+            updateTransform();
+        }
+    });
+    
+    // 開始拖拽
+    modalImage.addEventListener('mousedown', function(event) {
+        event.preventDefault();
+        isDragging = true;
+        startX = event.clientX - translateX;
+        startY = event.clientY - translateY;
+        lastX = event.clientX;
+        lastY = event.clientY;
+        modalImage.style.cursor = 'grabbing';
+    });
+    
+    // 拖拽移動
+    document.addEventListener('mousemove', function(event) {
+        if (!isDragging) return;
+        
+        event.preventDefault();
+        translateX = event.clientX - startX;
+        translateY = event.clientY - startY;
+        updateTransform();
+    });
+    
+    // 結束拖拽
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            updateTransform();
+        }
+    });
+    
+    // 雙擊重置縮放
+    modalImage.addEventListener('dblclick', function(event) {
+        event.preventDefault();
+        if (scale === 1) {
+            // 放大到滑鼠位置
+            const rect = modalImage.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left - rect.width / 2;
+            const mouseY = event.clientY - rect.top - rect.height / 2;
+            
+            scale = 2;
+            translateX = -mouseX;
+            translateY = -mouseY;
+        } else {
+            // 重置
+            resetTransform();
+        }
+        updateTransform();
+    });
+    
+    // ESC 鍵關閉 modal
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && imageModal.classList.contains('show')) {
+            bootstrap.Modal.getInstance(imageModal).hide();
+        }
+        // R 鍵重置縮放
+        if (event.key === 'r' || event.key === 'R') {
+            if (imageModal.classList.contains('show')) {
+                resetTransform();
+            }
+        }
+    });
+    
+    // 點擊圖片外的區域關閉 modal
+    imageModal.addEventListener('click', function(event) {
+        if (event.target === imageModal || event.target.classList.contains('modal-body')) {
+            bootstrap.Modal.getInstance(imageModal).hide();
+        }
+    });
+    
+    // 防止點擊圖片本身關閉 modal
+    modalImage.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+    
+    // 觸控支援
+    let touchStartDistance = 0;
+    let touchStartScale = 1;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    modalImage.addEventListener('touchstart', function(event) {
+        if (event.touches.length === 2) {
+            event.preventDefault();
+            const touch1 = event.touches[0];
+            const touch2 = event.touches[1];
+            touchStartDistance = Math.hypot(
+                touch1.clientX - touch2.clientX,
+                touch1.clientY - touch2.clientY
+            );
+            touchStartScale = scale;
+        } else if (event.touches.length === 1) {
+            const touch = event.touches[0];
+            touchStartX = touch.clientX - translateX;
+            touchStartY = touch.clientY - translateY;
+        }
+    });
+    
+    modalImage.addEventListener('touchmove', function(event) {
+        if (event.touches.length === 2) {
+            event.preventDefault();
+            const touch1 = event.touches[0];
+            const touch2 = event.touches[1];
+            const currentDistance = Math.hypot(
+                touch1.clientX - touch2.clientX,
+                touch1.clientY - touch2.clientY
+            );
+            const newScale = Math.min(Math.max(0.5, touchStartScale * (currentDistance / touchStartDistance)), 5);
+            scale = newScale;
+            updateTransform();
+        } else if (event.touches.length === 1) {
+            event.preventDefault();
+            const touch = event.touches[0];
+            translateX = touch.clientX - touchStartX;
+            translateY = touch.clientY - touchStartY;
+            updateTransform();
+        }
+    });
+});
+</script>
 {% endblock %}

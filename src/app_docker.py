@@ -31,9 +31,10 @@ def create_app():
     app.secret_key = config.SECRET_KEY
     app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
     
-    # 設置模板全域變數
-    app.jinja_env.globals.update(get_template_context())
-    
+     # 💡 進入 app context 再設置 jinja template 的 global context
+    with app.app_context():
+        app.jinja_env.globals.update(get_template_context())
+
     # 在每個請求前設置語言上下文
     @app.before_request
     def before_request():

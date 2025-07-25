@@ -32,6 +32,29 @@
                 </div>
             </div>
             
+            <!-- 模型選擇 -->
+            <div class="mb-4">
+                <label class="form-label">
+                    <i class="fas fa-brain text-sage"></i> {{ get_text('detection_model') }}
+                </label>
+                <div class="model-selector-container">
+                    <div class="row g-2">
+                        <div class="col-md-12">
+                            <select class="form-select" id="modelSelect" onchange="changeModel()">
+                                {% for model_key, model_info in available_models.items() %}
+                                <option value="{{ model_key }}" {% if model_key == current_model %}selected{% endif %}>
+                                    {{ model_info.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="model-description mt-2">
+                        <small class="text-muted" id="modelDescription">{{ get_text('model_description') }}</small>
+                    </div>
+                </div>
+            </div>
+            
             <div class="mb-4">
                 <label for="confidence" class="form-label">{{ get_text('confidence_threshold') }}</label>
                 <div class="range-slider-container">
@@ -163,8 +186,57 @@ window.translations = {
     'processing_failed': '{{ get_text("processing_failed") }}',
     'network_error': '{{ get_text("network_error") }}',
     'copied_to_clipboard': '{{ get_text("copied_to_clipboard") }}',
-    'copy_failed': '{{ get_text("copy_failed") }}'
+    'copy_failed': '{{ get_text("copy_failed") }}',
+    'model_changed_success': '{{ get_text("model_changed_success") }}',
+    'model_change_failed': '{{ get_text("model_change_failed") }}'
 };
+
+// 模型資訊（從後端動態傳遞）
+const modelInfo = {{ available_models | tojson }};
+
+// 切換模型
+function changeModel() {
+    const modelSelect = document.getElementById('modelSelect');
+    const selectedModel = modelSelect.value;
+    const modelDescription = document.getElementById('modelDescription');
+    
+    // 更新模型描述
+    if (modelInfo[selectedModel]) {
+        const info = modelInfo[selectedModel];
+        modelDescription.innerHTML = `
+            <div class="mt-2 text-start">
+                <div><span class="badge bg-primary">{{ get_text("model_accuracy") }}: ${info.accuracy}</span></div>
+                <div class="mt-1"><span class="badge bg-secondary">{{ get_text("model_speed") }}: ${info.speed}</span></div>
+            </div>
+            <div class="text-end mt-2">
+                <small class="text-muted">${info.description}</small>
+            </div>
+        `;
+    }
+    
+    // 發送請求到後端切換模型
+    fetch(`/set_model/${selectedModel}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Model changed successfully');
+        } else {
+            console.error('Failed to change model');
+        }
+    })
+    .catch(error => {
+        console.error('Error changing model:', error);
+    });
+}
+
+// 初始化模型描述
+document.addEventListener('DOMContentLoaded', function() {
+    changeModel(); // 設置初始描述
+});
 
 // 翻譯函數
 function t(key) {

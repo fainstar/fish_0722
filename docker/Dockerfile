@@ -5,10 +5,11 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # 設置環境變量
-ENV PYTHONUNBUFFERED=1
-ENV FLASK_APP=src/app_docker.py
-ENV FLASK_ENV=production
-ENV DOCKER_CONTAINER=true
+ENV PYTHONUNBUFFERED=1 \
+    FLASK_APP=src/app_docker.py \
+    FLASK_ENV=production \
+    DOCKER_CONTAINER=true \
+    PYTHONPATH=/app  
 
 # 安裝系統依賴
 RUN apt-get update && apt-get install -y \

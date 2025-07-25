@@ -1,0 +1,51 @@
+{
+  "roboflow": {
+    "api_key": "AXiN0wVj2W4ZXEFJDG13",
+    "endpoints": {
+      "detect_count_visualize": {
+        "name": "RoboFlow",
+        "description": "by RoboFlow,RF-DETR",
+        "url": "https://serverless.roboflow.com/infer/workflows/hw30501/detect-count-and-visualize-2",
+        "model_id": "hw30501/detect-count-and-visualize-2",
+        "version": "2025-07-23",
+        "accuracy": "✪ ✪ ○ ○ ○",
+        "speed": "✪ ✪ ○ ○ ○"
+      },
+      "fast_detection": {
+        "name": "RTX4000_Lab",
+        "description": "Use FIT Lab",
+        "url": "http://127.0.0.1:8000/detect/simple",
+        "model_id": "final",
+        "version": "2025-07-24",
+        "accuracy": "✪ ✪ ✪ ✪ ✪",
+        "speed": "✪ ✪ ✪ ✪ ✪"
+      },
+      "high_accuracy": {
+        "name": "Mac_LIN",
+        "description": "by lin,yolov8",
+        "url": "http://127.0.0.1:8000/detect/simple",
+        "model_id": "lin",
+        "version": "2025-07-24",
+        "accuracy": "✪ ✪ ✪ ○ ○",
+        "speed": "✪ ✪ ✪ ✪ ✪"
+      }
+    },
+    "default_parameters": {
+      "confidence": 0.5,
+      "overlap": 0.3,
+      "format": "json"
+    }
+  },
+  "api_settings": {
+    "timeout": 30,
+    "retry_attempts": 3,
+    "retry_delay": 1.0
+  },
+  "image_processing": {
+    "max_size": {
+      "width": 1024,
+      "height": 1024
+    },
+    "quality": 85
+  }
+}

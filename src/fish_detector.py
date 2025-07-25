@@ -11,15 +11,39 @@ from pathlib import Path
 from src.config import config
 
 class FishDetectionSystem:
-    def __init__(self, api_key=None, endpoint_name='detect_count_visualize'):
+    def __init__(self, api_key=None, endpoint_name='detect_count_visualize', model_key=None):
         self.api_key = api_key or config.ROBOFLOW_API_KEY
-        self.endpoint_config = config.get_api_endpoint(endpoint_name)
-        self.api_url = self.endpoint_config.get('url', config.ROBOFLOW_API_URL)
-        self.model_id = self.endpoint_config.get('model_id', config.ROBOFLOW_MODEL_ID)
+        
+        # 如果提供了 model_key，使用指定的模型配置
+        if model_key:
+            model_config = config.get_model_config(model_key)
+            self.api_url = model_config.get('url', config.ROBOFLOW_API_URL)
+            self.model_id = model_config.get('model_id', config.ROBOFLOW_MODEL_ID)
+            self.model_name = model_config.get('name', 'Unknown Model')
+            self.model_key = model_key
+        else:
+            # 使用預設配置
+            self.endpoint_config = config.get_api_endpoint(endpoint_name)
+            self.api_url = self.endpoint_config.get('url', config.ROBOFLOW_API_URL)
+            self.model_id = self.endpoint_config.get('model_id', config.ROBOFLOW_MODEL_ID)
+            self.model_name = self.endpoint_config.get('name', 'Default Model')
+            self.model_key = endpoint_name
+            
         self.timeout = config.API_TIMEOUT
         self.retry_attempts = config.API_RETRY_ATTEMPTS
         self.retry_delay = config.API_RETRY_DELAY
         self.default_params = config.get_default_parameters()
+    
+    def set_model(self, model_key):
+        """動態切換檢測模型"""
+        model_config = config.get_model_config(model_key)
+        if model_config:
+            self.api_url = model_config.get('url', self.api_url)
+            self.model_id = model_config.get('model_id', self.model_id)
+            self.model_name = model_config.get('name', 'Unknown Model')
+            self.model_key = model_key
+            return True
+        return False
         
     def resize_image(self, image_path, max_size=None):
         """調整圖片大小，確保不超過指定的最大尺寸"""
@@ -47,33 +71,45 @@ class FishDetectionSystem:
         """使用 Roboflow API 進行魚類偵測"""
         headers = {'Content-Type': 'application/json'}
         
-        # 調整圖片大小
-        resized_image_path = self.resize_image(image_path)
-        
-        # 將圖片轉換為base64
-        image_base64 = self.image_to_base64(resized_image_path)
-        
         # 使用配置中的預設參數，並允許覆蓋
         params = self.default_params.copy()
         if confidence is not None:
             params['confidence'] = confidence
         
-        payload = {
-            "api_key": self.api_key,
-            "inputs": {
-                "image": {
-                    "type": "base64",
-                    "value": image_base64
+        # 根據API端點類型構建不同的payload格式
+        if "127.0.0.1" in self.api_url or "localhost" in self.api_url:
+            # 本地API：使用原始圖片，不壓縮
+            image_base64 = self.image_to_base64(image_path)
+            payload = {
+                "image": image_base64,
+                "model": self.model_id,  # 添加模型ID參數
+                "confidence": confidence if confidence is not None else 0.5,
+                "iou_threshold": 0.5  # 添加 IoU 閾值參數
+            }
+            used_image_path = image_path  # 記錄使用的圖片路徑
+        else:
+            # Roboflow API：使用調整大小後的圖片
+            resized_image_path = self.resize_image(image_path)
+            image_base64 = self.image_to_base64(resized_image_path)
+            payload = {
+                "api_key": self.api_key,
+                "inputs": {
+                    "image": {
+                        "type": "base64",
+                        "value": image_base64
+                    }
                 }
             }
-        }
-        
-        # 添加額外參數到 payload
-        if params:
-            payload.update(params)
+            # 添加額外參數到 payload
+            if params:
+                payload.update(params)
+            used_image_path = str(resized_image_path)  # 記錄使用的圖片路徑
         
         # 實施重試邏輯
         import time
+        print(f"使用 API URL: {self.api_url}")
+        print(f"模型名稱: {self.model_name}")
+        
         for attempt in range(self.retry_attempts):
             try:
                 response = requests.post(
@@ -101,7 +137,7 @@ class FishDetectionSystem:
                     import json
                     json.dump(metadata, json_file, indent=2, ensure_ascii=False)
                     
-                return response_data, str(resized_image_path)
+                return response_data, used_image_path
                 
             except requests.exceptions.RequestException as e:
                 if attempt < self.retry_attempts - 1:
@@ -117,15 +153,72 @@ class FishDetectionSystem:
     def load_predictions_from_response(self, response_data):
         """從API回應中提取預測結果"""
         try:
-            predictions = response_data['outputs'][0]['predictions']['predictions']
-            return predictions
+            # 檢查是否為本地API的 /detect/simple 格式
+            if 'predictions' in response_data and isinstance(response_data['predictions'], list):
+                # 本地API /detect/simple 格式
+                # 注意：本地API的 x,y 是左上角坐標，需要轉換為中心點坐標以保持一致性
+                converted_predictions = []
+                for pred in response_data['predictions']:
+                    # 本地API返回的是左上角坐標，但我們的繪製邏輯期望中心點坐標
+                    # 所以這裡轉換為中心點坐標格式
+                    left_x = pred['x']
+                    top_y = pred['y']
+                    width = pred['width']
+                    height = pred['height']
+                    
+                    # 轉換為中心點坐標
+                    center_x = left_x + width / 2
+                    center_y = top_y + height / 2
+                    
+                    converted_pred = {
+                        'class': pred.get('class', 'Fish'),
+                        'confidence': pred['confidence'],
+                        'x': center_x,  # 中心點 x
+                        'y': center_y,  # 中心點 y
+                        'width': width,
+                        'height': height
+                    }
+                    converted_predictions.append(converted_pred)
+                return converted_predictions
+            # 檢查是否為本地API的 /detect 格式
+            elif 'detections' in response_data and isinstance(response_data['detections'], list):
+                # 本地API /detect 格式 - 轉換為 Roboflow 格式
+                converted_predictions = []
+                for det in response_data['detections']:
+                    bbox = det['bbox']
+                    # 從 x1,y1,x2,y2 轉換為中心點和寬高
+                    width = bbox['x2'] - bbox['x1']
+                    height = bbox['y2'] - bbox['y1']
+                    center_x = bbox['x1'] + width / 2
+                    center_y = bbox['y1'] + height / 2
+                    
+                    converted_pred = {
+                        'class': det.get('class_name', 'Fish'),
+                        'confidence': det['confidence'],
+                        'x': center_x,
+                        'y': center_y,
+                        'width': width,
+                        'height': height
+                    }
+                    converted_predictions.append(converted_pred)
+                return converted_predictions
+            # Roboflow API格式
+            elif 'outputs' in response_data:
+                predictions = response_data['outputs'][0]['predictions']['predictions']
+                return predictions
+            else:
+                print(f"Unknown response format: {list(response_data.keys())}")
+                print(f"Sample response data: {response_data}")
+                return []
         except Exception as e:
             print(f"Error extracting predictions: {str(e)}")
+            print(f"Response data structure: {response_data}")
             return []
 
-    def draw_detections(self, image, predictions, confidence_threshold=0.5):
+    def draw_detections(self, image, predictions, confidence_threshold=0.5, original_size=None, api_url=None):
         """在圖片上繪製偵測結果，並根據信賴度使用不同顏色的框。"""
         annotated_image = image.copy()
+        current_height, current_width = image.shape[:2]
         
         # 定義莫蘭迪色系 (BGR格式)
         colors = {
@@ -135,6 +228,25 @@ class FishDetectionSystem:
             'text_bg': (80, 80, 80),       # 深灰背景
             'text': (245, 245, 245)      # 米白文字
         }
+        
+        # 計算縮放比例（只對遠程API需要）
+        scale_x = scale_y = 1.0
+        is_local_api = api_url and ("127.0.0.1" in api_url or "localhost" in api_url)
+        
+        print(f"API URL: {api_url}")
+        print(f"是否為本地API: {is_local_api}")
+        
+        if not is_local_api and original_size and len(predictions) > 0:
+            # 遠程API：需要座標縮放（因為使用的是調整後的圖片，但座標基於原始圖片）
+            first_pred = predictions[0]
+            if 'x' in first_pred and first_pred['x'] > current_width:
+                # 座標基於原始圖片，需要縮放
+                scale_x = current_width / original_size[0]
+                scale_y = current_height / original_size[1]
+                print(f"遠程API - 座標縮放比例: x={scale_x:.3f}, y={scale_y:.3f}")
+                print(f"原始尺寸: {original_size}, 當前尺寸: ({current_width}, {current_height})")
+        elif is_local_api:
+            print(f"本地API - 使用原始圖片，座標無需縮放")
         
         # 這裡將只儲存高於信賴度閾值的魚
         fish_details_above_threshold = []
@@ -153,10 +265,38 @@ class FishDetectionSystem:
                     box_color = colors['low_conf']
 
                 x_center, y_center, width, height = pred['x'], pred['y'], pred['width'], pred['height']
-                x1 = int(x_center - width / 2)
-                y1 = int(y_center - height / 2)
-                x2 = int(x_center + width / 2)
-                y2 = int(y_center + height / 2)
+                
+                # 根據API類型使用不同的座標計算方式
+                if is_local_api:
+                    # 本地API：我們已經在 load_predictions_from_response 中轉換為中心點坐標
+                    # 所以這裡按照中心點坐標處理
+                    x1 = int(x_center - width / 2)
+                    y1 = int(y_center - height / 2)
+                    x2 = int(x_center + width / 2)
+                    y2 = int(y_center + height / 2)
+                    print(f"本地API座標計算: 中心點({x_center}, {y_center}), 尺寸({width}x{height})")
+                    print(f"邊界框: ({x1}, {y1}) 到 ({x2}, {y2})")
+                else:
+                    # 遠程API使用中心點座標格式
+                    x_center_scaled = x_center * scale_x
+                    y_center_scaled = y_center * scale_y
+                    width_scaled = width * scale_x
+                    height_scaled = height * scale_y
+                    
+                    x1 = int(x_center_scaled - width_scaled / 2)
+                    y1 = int(y_center_scaled - height_scaled / 2)
+                    x2 = int(x_center_scaled + width_scaled / 2)
+                    y2 = int(y_center_scaled + height_scaled / 2)
+                    print(f"遠程API座標計算: 中心({x_center_scaled:.1f}, {y_center_scaled:.1f}), 尺寸({width_scaled:.1f}x{height_scaled:.1f})")
+                    print(f"邊界框: ({x1}, {y1}) 到 ({x2}, {y2})")
+                
+                # 確保座標在圖片範圍內
+                x1 = max(0, min(x1, current_width - 1))
+                y1 = max(0, min(y1, current_height - 1))
+                x2 = max(0, min(x2, current_width - 1))
+                y2 = max(0, min(y2, current_height - 1))
+                
+                print(f"裁剪後邊界框: ({x1}, {y1}) 到 ({x2}, {y2})")
                 
                 # 繪製邊界框
                 cv2.rectangle(annotated_image, (x1, y1), (x2, y2), box_color, 2)
@@ -266,22 +406,32 @@ class FishDetectionSystem:
         """處理單張圖片，包括偵測和繪製"""
         start_time = cv2.getTickCount()
         
-        response_data, resized_image_path = self.detect_fish_api(image_path)
+        # 獲取原始圖片尺寸
+        with Image.open(image_path) as original_img:
+            original_size = original_img.size  # (width, height)
+        
+        response_data, used_image_path = self.detect_fish_api(image_path)
         
         if not response_data:
             return None
 
-        # 從調整大小後的圖片路徑讀取圖片
-        image = cv2.imread(resized_image_path)
+        # 根據使用的圖片路徑讀取圖片
+        image = cv2.imread(used_image_path)
         if image is None:
-            print(f"無法讀取圖片: {resized_image_path}")
+            print(f"無法讀取圖片: {used_image_path}")
             return None
+        
+        print(f"載入的圖片尺寸: {image.shape[:2]} (高度x寬度)")
+        print(f"使用的圖片路徑: {used_image_path}")
 
         predictions = self.load_predictions_from_response(response_data)
         
         # 1. 繪製偵測框，此函式內部已根據 confidence_threshold 進行篩選
         # 返回的 fish_count 和 fish_details 都已是篩選後的結果
-        annotated_image, fish_count, fish_details = self.draw_detections(image, predictions, confidence_threshold)
+        # 傳遞原始尺寸和API URL用於座標縮放判斷
+        annotated_image, fish_count, fish_details = self.draw_detections(
+            image, predictions, confidence_threshold, original_size, self.api_url
+        )
         
         # 2. 再加上統計資訊
         # 直接將篩選後的結果傳入即可
@@ -290,17 +440,25 @@ class FishDetectionSystem:
         # 儲存最終處理後的圖片
         original_filename = Path(image_path).name
         output_filename = "detected_" + original_filename
-        output_path = Path(resized_image_path).parent / output_filename
+        output_path = Path(used_image_path).parent / output_filename
         cv2.imwrite(str(output_path), annotated_image_with_summary)
         
         end_time = cv2.getTickCount()
         process_time = (end_time - start_time) / cv2.getTickFrequency()
         
+        # 確定返回的圖片資訊
+        if used_image_path == image_path:
+            # 使用原始圖片（本地API）
+            used_image_name = Path(image_path).name
+        else:
+            # 使用調整大小的圖片（遠程API）
+            used_image_name = Path(used_image_path).name
+        
         return {
             "output_image": output_filename,
             "output_image_path": str(output_path),
-            "resized_image": Path(resized_image_path).name,
-            "resized_image_path": resized_image_path,
+            "used_image": used_image_name,
+            "used_image_path": used_image_path,
             "fish_count": fish_count,
             "fish_details": fish_details,
             "process_time": process_time,

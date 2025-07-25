@@ -55,7 +55,82 @@ def register_routes(app):
             session['session_start'] = datetime.now().isoformat()
             get_app_logger().info(f"New user session started for {client_info['ip_address']}")
         
-        return render_template('index.html')
+        # 獲取所有可用的模型配置
+        available_models = config.get_available_models()
+        current_model = session.get('selected_model', 'detect_count_visualize')
+        
+        return render_template('index.html', 
+                             available_models=available_models,
+                             current_model=current_model)
+
+    @app.route('/set_model/<model_key>')
+    def set_model(model_key=None):
+        """設置當前使用的檢測模型"""
+        client_info = get_client_info(request)
+        
+        available_models = config.get_available_models()
+        
+        if model_key in available_models:
+            # 設置新模型
+            if config.set_active_model(model_key):
+                session['selected_model'] = model_key
+                model_info = available_models[model_key]
+                
+                log_user_activity('model_change', {
+                    'new_model': model_key,
+                    'model_name': model_info['name'],
+                    'old_model': session.get('selected_model', 'detect_count_visualize'),
+                    'model_accuracy': model_info['accuracy'],
+                    'model_speed': model_info['speed']
+                }, client_info)
+                
+                get_app_logger().info(f"Model changed to {model_key} ({model_info['name']}) for user {client_info['ip_address']}")
+                flash(get_text('model_changed_success').format(model_name=model_info['name']), 'success')
+            else:
+                log_user_activity('model_change_failed', {
+                    'attempted_model': model_key,
+                    'error_type': 'config_update_failed'
+                }, client_info)
+                flash(get_text('model_change_failed'), 'error')
+        else:
+            log_user_activity('invalid_model_attempt', {
+                'attempted_model': model_key,
+                'available_models': list(available_models.keys())
+            }, client_info)
+            get_app_logger().warning(f"Invalid model change attempt: {model_key} from {client_info['ip_address']}")
+            flash(get_text('invalid_model_selection'), 'error')
+        
+        return redirect(request.referrer or url_for('index'))
+    
+    @app.route('/api/models')
+    def get_models_api():
+        """API端點：獲取所有可用的模型資訊"""
+        client_info = get_client_info(request)
+        
+        try:
+            models = config.get_available_models()
+            current_model = session.get('selected_model', 'detect_count_visualize')
+            
+            log_user_activity('models_api_access', {
+                'models_count': len(models),
+                'current_model': current_model
+            }, client_info)
+            
+            return jsonify({
+                'success': True,
+                'models': models,
+                'current_model': current_model
+            })
+        except Exception as e:
+            log_user_activity('models_api_error', {
+                'error_message': str(e),
+                'error_type': type(e).__name__
+            }, client_info)
+            get_app_logger().error(f"Models API error: {str(e)} - User: {client_info['ip_address']}")
+            return jsonify({
+                'success': False,
+                'error': 'Failed to load models'
+            }), 500
 
     @app.route('/upload', methods=['POST'])
     def upload_file():
@@ -95,20 +170,30 @@ def register_routes(app):
             filepath, filename = save_uploaded_file(file, temp_dir)
             
             confidence = float(request.form.get('confidence', 0.5))
+            selected_model = session.get('selected_model', 'detect_count_visualize')
 
             try:
-                system = FishDetectionSystem()
+                system = FishDetectionSystem(model_key=selected_model)
                 start_time = datetime.now()
                 result = system.process_image(filepath, confidence)
                 process_time = (datetime.now() - start_time).total_seconds()
                 
                 if result:
+                    # 添加使用的模型資訊到結果中
+                    result['model_used'] = {
+                        'key': selected_model,
+                        'name': system.model_name,
+                        'model_id': system.model_id
+                    }
+                    
                     move_processed_files(result, app.root_path)
                     clean_processed_folder()
 
                     # 記錄成功的處理結果
                     log_user_activity('file_processing_success', {
                         'filename': filename,
+                        'model_used': selected_model,
+                        'model_name': system.model_name,
                         'fish_count': result['fish_count'],
                         'confidence_threshold': confidence,
                         'processing_time_seconds': process_time,
@@ -242,14 +327,22 @@ def register_routes(app):
             }, client_info)
         
         confidence = float(request.form.get('confidence', 0.5))
+        selected_model = session.get('selected_model', 'detect_count_visualize')
 
         try:
-            system = FishDetectionSystem()
+            system = FishDetectionSystem(model_key=selected_model)
             start_time = datetime.now()
             result = system.process_image(filepath, confidence)
             process_time = (datetime.now() - start_time).total_seconds()
             
             if result:
+                # 添加使用的模型資訊到結果中
+                result['model_used'] = {
+                    'key': selected_model,
+                    'name': system.model_name,
+                    'model_id': system.model_id
+                }
+                
                 move_processed_files(result, app.root_path)
                 clean_processed_folder()
 
@@ -260,6 +353,8 @@ def register_routes(app):
                 # 記錄成功的API處理結果
                 log_user_activity('api_processing_success', {
                     'filename': filename,
+                    'model_used': selected_model,
+                    'model_name': system.model_name,
                     'fish_count': result['fish_count'],
                     'confidence_threshold': confidence,
                     'processing_time_seconds': process_time,

@@ -70,18 +70,18 @@ def move_processed_files(result, app_root_path):
     os.makedirs(processed_dir_abs, exist_ok=True)
     
     final_output_path = os.path.join(processed_dir_abs, result['output_image'])
-    final_resized_path = os.path.join(processed_dir_abs, result['resized_image'])
+    final_used_path = os.path.join(processed_dir_abs, result['used_image'])
     
     # 檢查源文件是否存在
     if not os.path.exists(result['output_image_path']):
         raise FileNotFoundError(f"Source file not found: {result['output_image_path']}")
-    if not os.path.exists(result['resized_image_path']):
-        raise FileNotFoundError(f"Source file not found: {result['resized_image_path']}")
+    if not os.path.exists(result['used_image_path']):
+        raise FileNotFoundError(f"Source file not found: {result['used_image_path']}")
     
     shutil.move(result['output_image_path'], final_output_path)
-    shutil.move(result['resized_image_path'], final_resized_path)
+    shutil.move(result['used_image_path'], final_used_path)
     
-    return final_output_path, final_resized_path
+    return final_output_path, final_used_path
 
 def create_sample_image_copy(app_root_path, temp_dir):
     """創建範例圖片副本"""
