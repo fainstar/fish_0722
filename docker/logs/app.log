@@ -1,0 +1,22 @@
+2025-07-25 16:37:02 - INFO - 🐳 Fish Detection System started in Docker container
+2025-07-25 16:37:06 - INFO - Action: home_page_visit | IP: 127.0.0.1 | Browser: curl 7.88.1 | OS: Other | Device: Other | Mobile: False | Language: Unknown | Details: user_language: zh | session_duration: new_session
+2025-07-25 16:37:06 - INFO - New user session started for 127.0.0.1
+2025-07-25 16:37:07 - INFO - Action: home_page_visit | IP: 172.18.0.1 | Browser: Electron 34.5.1 | OS: Mac OS X | Device: Mac | Mobile: False | Language: zh-TW | Details: user_language: zh | session_duration: new_session
+2025-07-25 16:37:07 - INFO - New user session started for 172.18.0.1
+2025-07-25 16:37:08 - INFO - Action: model_change | IP: 172.18.0.1 | Browser: Electron 34.5.1 | OS: Mac OS X | Device: Mac | Mobile: False | Language: zh-TW | Details: new_model: detect_count_visualize | model_name: RoboFlow | old_model: detect_count_visualize | model_accuracy: ✪ ✪ ○ ○ ○ | model_speed: ✪ ✪ ○ ○ ○
+2025-07-25 16:37:08 - INFO - Model changed to detect_count_visualize (RoboFlow) for user 172.18.0.1
+2025-07-25 16:37:08 - INFO - Action: home_page_visit | IP: 172.18.0.1 | Browser: Electron 34.5.1 | OS: Mac OS X | Device: Mac | Mobile: False | Language: zh-TW | Details: user_language: zh | session_duration: returning
+2025-07-25 16:37:37 - INFO - Action: home_page_visit | IP: 127.0.0.1 | Browser: curl 7.88.1 | OS: Other | Device: Other | Mobile: False | Language: Unknown | Details: user_language: zh | session_duration: new_session
+2025-07-25 16:37:37 - INFO - New user session started for 127.0.0.1
+2025-07-25 16:38:07 - INFO - Action: home_page_visit | IP: 127.0.0.1 | Browser: curl 7.88.1 | OS: Other | Device: Other | Mobile: False | Language: Unknown | Details: user_language: zh | session_duration: new_session
+2025-07-25 16:38:07 - INFO - New user session started for 127.0.0.1
+2025-07-25 16:38:37 - INFO - Action: home_page_visit | IP: 127.0.0.1 | Browser: curl 7.88.1 | OS: Other | Device: Other | Mobile: False | Language: Unknown | Details: user_language: zh | session_duration: new_session
+2025-07-25 16:38:37 - INFO - New user session started for 127.0.0.1
+2025-07-25 16:39:08 - INFO - Action: home_page_visit | IP: 127.0.0.1 | Browser: curl 7.88.1 | OS: Other | Device: Other | Mobile: False | Language: Unknown | Details: user_language: zh | session_duration: new_session
+2025-07-25 16:39:08 - INFO - New user session started for 127.0.0.1
+2025-07-25 16:39:38 - INFO - Action: home_page_visit | IP: 127.0.0.1 | Browser: curl 7.88.1 | OS: Other | Device: Other | Mobile: False | Language: Unknown | Details: user_language: zh | session_duration: new_session
+2025-07-25 16:39:38 - INFO - New user session started for 127.0.0.1
+2025-07-25 16:40:08 - INFO - Action: home_page_visit | IP: 127.0.0.1 | Browser: curl 7.88.1 | OS: Other | Device: Other | Mobile: False | Language: Unknown | Details: user_language: zh | session_duration: new_session
+2025-07-25 16:40:08 - INFO - New user session started for 127.0.0.1
+2025-07-25 16:40:38 - INFO - Action: home_page_visit | IP: 127.0.0.1 | Browser: curl 7.88.1 | OS: Other | Device: Other | Mobile: False | Language: Unknown | Details: user_language: zh | session_duration: new_session
+2025-07-25 16:40:38 - INFO - New user session started for 127.0.0.1

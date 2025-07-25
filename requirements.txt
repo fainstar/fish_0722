@@ -6,3 +6,7 @@ requests==2.31.0
 Werkzeug==2.3.7
 user-agents==2.2.0
 gunicorn==21.2.0
+flake8
+black
+pytest
+pytest-cov

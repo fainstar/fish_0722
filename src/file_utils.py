@@ -80,6 +80,9 @@ def move_processed_files(result, app_root_path):
     
     shutil.move(result['output_image_path'], final_output_path)
     shutil.move(result['used_image_path'], final_used_path)
+
+    # 清理 processed 資料夾，只保留最新的 MAX_PROCESSED_FILES 個檔案
+    clean_processed_folder()
     
     return final_output_path, final_used_path
 

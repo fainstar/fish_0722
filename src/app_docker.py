@@ -49,7 +49,7 @@ def create_app():
 def main():
     """主函數"""
     # 初始化日誌系統
-    app_logger, user_logger = setup_logging()
+    app_logger = setup_logging()
     
     # 確保必要目錄存在
     os.makedirs(config.UPLOAD_FOLDER, exist_ok=True)

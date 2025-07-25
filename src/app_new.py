@@ -38,7 +38,7 @@ os.makedirs(uploads_dir, exist_ok=True)
 os.makedirs(demo_dir, exist_ok=True)
 
 # 初始化日誌系統
-app_logger, user_logger = setup_logging()
+app_logger = setup_logging()
 
 @app.before_request
 def before_request():

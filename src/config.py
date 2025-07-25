@@ -17,7 +17,9 @@ class Config:
     }
     
     # 文件上傳配置
+    UPLOAD_FOLDER = 'static/uploads'
     PROCESSED_FOLDER = 'static/processed'
+    MAX_PROCESSED_FILES = 20
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
     MAX_PROCESSED_FILES = 50  # 最多保留50筆處理後的檔案
@@ -27,6 +29,11 @@ class Config:
     
     # 管理員配置
     ADMIN_PASSWORD = 'fish_admin_2023'
+
+    # Flask 設定
+    HOST = '127.0.0.1'
+    PORT = 5000
+    DEBUG = True
     
     def __init__(self):
         # 確保必要的目錄存在
