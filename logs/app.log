@@ -109,3 +109,4 @@
 2025-07-25 14:41:39 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
 2025-07-25 14:41:44 - INFO - API processing successful: A.JPG - Found 70 fish - Processing time: 3.94s - User: 192.168.0.12
 2025-07-25 14:41:45 - INFO - Result page viewed: 747b9f7f-a993-43c3-a9fd-45f705a689a2 - Fish count: 70 - User: 192.168.0.12
+2025-07-25 15:56:47 - INFO - Fish Detection System started - Modular architecture
