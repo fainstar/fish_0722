@@ -20,10 +20,6 @@ cd fish_0722
 ### 2. 環境變數設定（可選）
 創建 `.env` 文件來自訂配置：
 ```bash
-# API 設定
-ROBOFLOW_API_KEY=your-roboflow-api-key
-ROBOFLOW_MODEL_URL=https://detect.roboflow.com/your-model
-
 # 管理員設定
 ADMIN_PASSWORD=your-secure-admin-password
 
@@ -35,11 +31,8 @@ PORT=5001
 ### 3. 使用部署腳本（推薦）
 ```bash
 # 構建並啟動服務
-./deploy.sh build
-./deploy.sh start
-
-# 或者一次執行
-./deploy.sh build && ./deploy.sh start
+./scripts/docker-deploy.sh build
+./scripts/docker-deploy.sh run
 ```
 
 ### 4. 手動部署（替代方案）
@@ -60,36 +53,27 @@ docker-compose ps
 
 - **主應用程式**: http://localhost:5001
 - **日誌查看**: http://localhost:5001/log
-- **管理員介面**: http://localhost:5001/admin/logs?admin_key=your-admin-password
+- **管理員介面**: http://localhost:5001/admin/logs?admin_key=fish_admin_2024
 
 ## 🛠️ 管理命令
 
 ### 使用部署腳本管理服務
 
 ```bash
-# 查看幫助
-./deploy.sh help
+# 構建映像
+./scripts/docker-deploy.sh build
 
-# 啟動服務
-./deploy.sh start
+# 運行容器
+./scripts/docker-deploy.sh run
+
+# 推送映像
+./scripts/docker-deploy.sh push
 
 # 停止服務
-./deploy.sh stop
-
-# 重啟服務
-./deploy.sh restart
+./scripts/docker-deploy.sh stop
 
 # 查看日誌
-./deploy.sh logs
-
-# 進入容器終端
-./deploy.sh shell
-
-# 備份數據
-./deploy.sh backup
-
-# 清理所有資源
-./deploy.sh cleanup
+./scripts/docker-deploy.sh logs
 ```
 
 ### 使用 Docker Compose 管理
@@ -129,8 +113,7 @@ docker-compose exec fish-detection bash
 
 | 變量名 | 默認值 | 說明 |
 |--------|--------|------|
-| `ROBOFLOW_API_KEY` | `your-roboflow-api-key` | Roboflow API 金鑰 |
-| `ROBOFLOW_MODEL_URL` | `https://detect.roboflow.com/your-model` | AI 模型 URL |
+
 | `ADMIN_PASSWORD` | `fish_admin_2024` | 管理員密碼 |
 | `SECRET_KEY` | `docker-fish-detection-2024-secure-key` | Flask 密鑰 |
 | `PORT` | `5001` | 應用程式端口 |
@@ -278,26 +261,19 @@ environment:
 
 ## 🔄 更新和維護
 
+### 更新和維護
+
 ### 更新應用程式
 ```bash
 # 停止服務
-./deploy.sh stop
+./scripts/docker-deploy.sh stop
 
 # 拉取最新代碼
 git pull
 
 # 重新構建並啟動
-./deploy.sh build
-./deploy.sh start
-```
-
-### 備份和恢復
-```bash
-# 創建備份
-./deploy.sh backup
-
-# 恢復備份（手動操作）
-cp -r backup_YYYYMMDD_HHMMSS/* ./
+./scripts/docker-deploy.sh build
+./scripts/docker-deploy.sh run
 ```
 
 ## 📞 支援

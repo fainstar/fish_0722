@@ -55,7 +55,6 @@ docker ps
 
 ```
 fish_0722/
-├── 📱 app.py                    # 舊版應用程式入口點 (已棄用)
 ├── 📋 requirements.txt          # Python 依賴清單
 ├── 📄 README.md                # 專案說明文檔
 │
@@ -199,7 +198,7 @@ docker run -d \
 |------|------|------|
 | 🏠 主應用 | http://localhost:5001 | 魚類檢測主介面 |
 | 📊 日誌查看 | http://localhost:5001/log | 系統運行日誌 |
-| 🔧 管理後台 | http://localhost:5001/admin/logs?admin_key=admin123 | 管理員介面 |
+| 🔧 管理後台 | http://localhost:5001/admin/logs?admin_key=fish_admin_2024 | 管理員介面 |
 | 🌐 語言切換 | http://localhost:5001/set_language/en | 動態語言切換 |
 
 ## ✅ 測試
