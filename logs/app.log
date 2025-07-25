@@ -110,3 +110,26 @@
 2025-07-25 14:41:44 - INFO - API processing successful: A.JPG - Found 70 fish - Processing time: 3.94s - User: 192.168.0.12
 2025-07-25 14:41:45 - INFO - Result page viewed: 747b9f7f-a993-43c3-a9fd-45f705a689a2 - Fish count: 70 - User: 192.168.0.12
 2025-07-25 15:56:47 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 15:58:31 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 15:58:32 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 15:58:40 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 15:58:41 - INFO - Language changed to zh for user 192.168.0.12
+2025-07-25 15:58:42 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 15:58:43 - INFO - Language changed to en for user 192.168.0.12
+2025-07-25 15:58:43 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 15:58:45 - INFO - Language changed to ja for user 192.168.0.12
+2025-07-25 15:58:45 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 192.168.0.12
+2025-07-25 16:00:36 - INFO - Model changed to detect_count_visualize (RoboFlow) for user 127.0.0.1
+2025-07-25 16:05:10 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 16:05:10 - INFO - Fish Detection System started - Modular architecture
+2025-07-25 16:05:18 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 16:05:20 - INFO - Language changed to en for user 127.0.0.1
+2025-07-25 16:05:21 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 16:05:22 - INFO - Language changed to ja for user 127.0.0.1
+2025-07-25 16:05:23 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 16:09:10 - INFO - Language changed to ja for user 127.0.0.1
+2025-07-25 16:09:10 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 16:09:13 - INFO - Language changed to zh for user 127.0.0.1
+2025-07-25 16:09:13 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
+2025-07-25 16:09:29 - INFO - Language changed to ja for user 127.0.0.1
+2025-07-25 16:09:29 - INFO - Model changed to high_accuracy2 (Colab_Cheng) for user 127.0.0.1
