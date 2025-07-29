@@ -16,7 +16,7 @@
                             <label for="file" class="btn btn-outline-primary btn-lg">
                                 <i class="fas fa-upload"></i><br>
                                 {{ get_text('select_image_file') }}
-                                <input type="file" class="d-none" id="file" name="file" accept="image/*">
+                                <input type="file" class="d-none" id="file" name="file" accept="image/*" onchange="previewImage(this)">
                             </label>
                         </div>
                         <div id="fileInfo" class="mt-2 text-center"></div>
@@ -56,7 +56,7 @@
             </div>
             
             <div class="mb-4">
-                <label for="confidence" class="form-label">{{ get_text('confidence_threshold') }}</label>
+                <label for="confidence" class="form-label">{{ get_text('iou_threshold') }}</label>
                 <div class="range-slider-container">
                     <span>{{ get_text('low') }}</span>
                     <input type="range" class="form-range" id="confidence" name="confidence" 
@@ -170,6 +170,7 @@
         </div>
     </div>
 </div>
+<script id="model-data" type="application/json">{{ available_models | tojson | safe }}</script>
 {% endblock %}
 
 {% block scripts %}
@@ -192,7 +193,7 @@ window.translations = {
 };
 
 // 模型資訊（從後端動態傳遞）
-const modelInfo = {{ available_models | tojson }};
+const modelInfo = JSON.parse(document.getElementById('model-data').textContent);
 
 // 切換模型
 function changeModel() {

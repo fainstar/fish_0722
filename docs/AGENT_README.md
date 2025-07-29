@@ -11,11 +11,12 @@ This document provides a technical overview of the Fish Detection System, struct
 ## 2. Key Files and Entrypoints
 
 - **Local Development Entrypoint**:
-  - `src/app_new.py`: Main script for local execution.
+  - `app.py`: The main entry point for local development. It initializes and runs the Flask application defined in `src/app_new.py`.
+  - `src/app_new.py`: Core application logic for the local environment.
   - `config.py`: Configuration for the local environment.
 
 - **Docker Production Entrypoint**:
-  - `src/app_docker.py`: Main script for the Docker container.
+  - `src/app_docker.py`: The entry point script used within the Docker container.
   - `docker/Dockerfile`: Primary Docker build definition.
   - `docker/docker-compose.yml`: Service orchestration for production.
   - `src/docker_config.py`: Configuration specific to the Docker environment.
@@ -40,9 +41,9 @@ This document provides a technical overview of the Fish Detection System, struct
     ```
 2.  **Run Application**:
     ```bash
-    python src/app_new.py
+    python app.py
     ```
-3.  **Access**: `http://127.0.0.1:5001`
+3.  **Access**: `http://127.0.0.1:5003`
 
 ### Docker Environment
 

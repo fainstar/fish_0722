@@ -42,7 +42,14 @@ class DockerConfig:
     
     # Flask 設定
     HOST = '0.0.0.0'  # Docker 容器內需要綁定到所有介面
-    PORT = int(os.environ.get('PORT', 5001))
+    # 從環境變數讀取配置，提供預設值
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'your_default_secret_key')
+    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', 16 * 1024 * 1024))
+    PORT = int(os.environ.get('PORT', 5003))
+    
+    # 語言配置
+    LANGUAGES = ['en', 'zh', 'ja']
+    
     DEBUG = False  # 生產環境關閉 debug
 
 # 創建全局配置實例

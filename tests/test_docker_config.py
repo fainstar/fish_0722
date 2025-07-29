@@ -13,7 +13,7 @@ def test_docker_config_defaults():
     assert config.ROBOFLOW_API_KEY == 'your-roboflow-api-key'
     assert config.ADMIN_PASSWORD == 'fish_admin_2024'
     assert config.HOST == '0.0.0.0'
-    assert config.PORT == 5001
+    assert config.PORT == 5003
     assert config.DEBUG is False
     assert config.UPLOAD_FOLDER == '/app/static/uploads'
     assert config.PROCESSED_FOLDER == '/app/static/processed'

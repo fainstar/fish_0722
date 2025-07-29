@@ -30,7 +30,7 @@
                 <span class="badge bg-secondary rounded-pill">{{ "%.2f"|format(result.process_time) }} {{ get_text('seconds') }}</span>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                {{ get_text('confidence_threshold') }}
+                {{ get_text('iou_threshold') }}
                 <span class="badge bg-info rounded-pill">{{ result.confidence }}</span>
             </li>
             {% if result.model_used %}
@@ -45,7 +45,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+    <div class="d-flex justify-content-center flex-wrap gap-2 mb-4 action-buttons">
         <a href="{{ url_for('download_file', filename=result.output_image) }}" class="btn btn-primary">
             <i class="fas fa-download text-white"></i> {{ get_text('download_result_image') }}
         </a>
@@ -112,7 +112,7 @@
                         <small>
                             <i class="fas fa-info-circle me-1"></i>
                             {{ get_text('total_fish_detected') }}: <strong>{{ result.fish_count }}</strong> | 
-                            {{ get_text('confidence_threshold') }}: <strong>{{ result.confidence }}</strong>
+                            {{ get_text('iou_threshold') }}: <strong>{{ result.iou }}</strong>
                         </small>
                     </div>
                     <div>
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 當 modal 隱藏時，恢復背景滾動
-    imageModal.addEventListener('hide.bs.modal', function() {
+    imageModal.addEventListener('hidden.bs.modal', function() {
         document.body.style.overflow = 'auto';
         resetTransform();
     });

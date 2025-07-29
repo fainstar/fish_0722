@@ -29,8 +29,8 @@ case "${1:-help}" in
         ;;
     "run")
         print_info "運行 Docker 容器..."
-        docker run -d -p 5001:5001 --name fish-detection-system fish-detection:latest
-        print_success "容器已啟動，訪問: http://localhost:5001"
+        docker run -d -p 5003:5003 --name fish-detection-system fish-detection:latest
+        print_success "容器已啟動，訪問: http://localhost:5003"
         ;;
     "stop")
         print_info "停止容器..."

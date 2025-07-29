@@ -7,7 +7,7 @@ services:
       dockerfile: docker/Dockerfile
     container_name: fish-detection-system
     ports:
-      - "5001:5001"
+      - "5003:5003"
     volumes:
       - ./logs:/app/logs
       - ./static/uploads:/app/static/uploads

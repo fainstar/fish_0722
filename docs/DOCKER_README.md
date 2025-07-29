@@ -11,6 +11,8 @@
 
 ## 🚀 快速開始
 
+本系統的 Docker 容器使用 `src/app_docker.py` 作為其入口點，該腳本專為容器化環境進行了優化。
+
 ### 1. 克隆專案（如果尚未完成）
 ```bash
 git clone <repository-url>
@@ -25,7 +27,7 @@ ADMIN_PASSWORD=your-secure-admin-password
 
 # 其他設定
 SECRET_KEY=your-secret-key
-PORT=5001
+PORT=5003
 ```
 
 ### 3. 使用部署腳本（推薦）
@@ -51,9 +53,9 @@ docker-compose ps
 
 服務啟動後，可以通過以下地址訪問：
 
-- **主應用程式**: http://localhost:5001
-- **日誌查看**: http://localhost:5001/log
-- **管理員介面**: http://localhost:5001/admin/logs?admin_key=fish_admin_2024
+- **主應用程式**: http://localhost:5003
+- **日誌查看**: http://localhost:5003/log
+- **管理員介面**: http://localhost:5003/admin/logs?admin_key=fish_admin_2024
 
 ## 🛠️ 管理命令
 
@@ -116,7 +118,7 @@ docker-compose exec fish-detection bash
 
 | `ADMIN_PASSWORD` | `fish_admin_2024` | 管理員密碼 |
 | `SECRET_KEY` | `docker-fish-detection-2024-secure-key` | Flask 密鑰 |
-| `PORT` | `5001` | 應用程式端口 |
+| `PORT` | `5003` | 應用程式端口 |
 
 ### 自訂配置
 
@@ -124,7 +126,7 @@ docker-compose exec fish-detection bash
    編輯 `docker-compose.yml` 中的 `ports` 設定
    ```yaml
    ports:
-     - "8080:5001"  # 將應用程式映射到主機 8080 端口
+     - "8080:5003"  # 將應用程式映射到主機 8080 端口
    ```
 
 2. **調整資源限制**：
@@ -205,7 +207,7 @@ tail -f /app/logs/user_activity.log
 2. **端口衝突**
    ```bash
    # 檢查端口使用情況
-   lsof -i :5001
+   lsof -i :5003
    
    # 修改端口映射
    # 編輯 docker-compose.yml 中的 ports 設定

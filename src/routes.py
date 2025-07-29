@@ -195,7 +195,7 @@ def register_routes(app):
                         'model_used': selected_model,
                         'model_name': system.model_name,
                         'fish_count': result['fish_count'],
-                        'confidence_threshold': confidence,
+                        'iou_threshold': confidence,
                         'processing_time_seconds': process_time,
                         'output_image': result['output_image'],
                         'file_size_bytes': file_size
@@ -209,7 +209,7 @@ def register_routes(app):
                     log_user_activity('file_processing_failed', {
                         'filename': filename,
                         'error_type': 'no_api_response',
-                        'confidence_threshold': confidence,
+                        'iou_threshold': confidence,
                         'processing_time_seconds': process_time
                     }, client_info)
                     
@@ -223,7 +223,7 @@ def register_routes(app):
                     'filename': filename,
                     'error_message': str(e),
                     'error_type': type(e).__name__,
-                    'confidence_threshold': confidence
+                    'iou_threshold': confidence
                 }, client_info)
                 
                 get_app_logger().error(f"File processing error: {filename} - {str(e)} - User: {client_info['ip_address']}")
@@ -245,14 +245,37 @@ def register_routes(app):
     def download_file(filename):
         """Serve files for download from the processed folder."""
         client_info = get_client_info(request)
-        directory = config.PROCESSED_FOLDER
+
+        # Security check: prevent path traversal
+        if '..' in filename or filename.startswith('/'):
+            log_user_activity('download_attempt_failed', {
+                'filename': filename,
+                'reason': 'invalid_path',
+                'requested_path': request.path
+            }, client_info)
+            get_app_logger().warning(f"Invalid download attempt for filename: {filename} from {client_info['ip_address']}")
+            flash(get_text('invalid_file_path'), 'error')
+            return redirect(url_for('index'))
+
+        project_root = os.path.abspath(os.path.join(app.root_path, '..'))
+        directory = os.path.join(project_root, config.PROCESSED_FOLDER)
+
+        logger = get_app_logger()
+        filepath = os.path.join(directory, filename)
+        logger.info(f"--- Download Debug ---")
+        logger.info(f"Requested filename: {filename}")
+        logger.info(f"Serving from directory: {directory}")
+        logger.info(f"Absolute file path: {filepath}")
+        logger.info(f"File exists: {os.path.exists(filepath)}")
+        logger.info(f"--- End Download Debug ---")
+
         try:
             log_user_activity('file_download', {
                 'filename': filename,
                 'download_type': 'processed_image'
             }, client_info)
             
-            get_app_logger().info(f"File download: {filename} - User: {client_info['ip_address']}")
+            get_app_logger().info(f"Attempting to send file: {filename} from directory: {directory}")
             return send_from_directory(directory, filename, as_attachment=True)
         except FileNotFoundError:
             log_user_activity('download_error', {
@@ -356,7 +379,7 @@ def register_routes(app):
                     'model_used': selected_model,
                     'model_name': system.model_name,
                     'fish_count': result['fish_count'],
-                    'confidence_threshold': confidence,
+                    'iou_threshold': confidence,
                     'processing_time_seconds': process_time,
                     'output_image': result['output_image'],
                     'file_size_bytes': file_size,
@@ -376,7 +399,7 @@ def register_routes(app):
                 log_user_activity('api_processing_failed', {
                     'filename': filename,
                     'error_type': 'no_api_response',
-                    'confidence_threshold': confidence,
+                    'iou_threshold': confidence,
                     'processing_time_seconds': process_time,
                     'use_sample': bool(use_sample)
                 }, client_info)
@@ -390,7 +413,7 @@ def register_routes(app):
                 'filename': filename,
                 'error_message': str(e),
                 'error_type': type(e).__name__,
-                'confidence_threshold': confidence,
+                'iou_threshold': confidence,
                 'use_sample': bool(use_sample)
             }, client_info)
             

@@ -30,10 +30,10 @@ cd fish_0722
 pip install -r requirements.txt
 
 # 3. 啟動應用程式
-python src/app_new.py
+python app.py
 
 # 4. 瀏覽器訪問
-# http://localhost:5001
+# http://localhost:5003
 ```
 
 ### 🐳 Docker 部署（推薦）
@@ -55,11 +55,12 @@ docker ps
 
 ```
 fish_0722/
+├── 📄 app.py                   # 🚀 主應用程式入口點
 ├── 📋 requirements.txt          # Python 依賴清單
 ├── 📄 README.md                # 專案說明文檔
 │
 ├── 📁 src/                     # 🎯 核心源碼目錄
-│   ├── app_new.py              # ✨ 新版應用程式入口點
+│   ├── app_new.py              # ✨ 本地開發環境應用
 │   ├── app_docker.py           # Docker 生產環境應用
 │   ├── config.py               # 本地開發環境配置
 │   ├── docker_config.py        # Docker 環境專用配置
@@ -187,7 +188,7 @@ docker-compose down                 # 停止服務
 # 直接運行
 docker run -d \
   --name fish-detection \
-  -p 5001:5001 \
+  -p 5003:5003 \
   -v $(pwd)/logs:/app/logs \
   fish-detection:prod
 ```
@@ -196,10 +197,10 @@ docker run -d \
 
 | 功能 | 地址 | 描述 |
 |------|------|------|
-| 🏠 主應用 | http://localhost:5001 | 魚類檢測主介面 |
-| 📊 日誌查看 | http://localhost:5001/log | 系統運行日誌 |
-| 🔧 管理後台 | http://localhost:5001/admin/logs?admin_key=fish_admin_2024 | 管理員介面 |
-| 🌐 語言切換 | http://localhost:5001/set_language/en | 動態語言切換 |
+| 🏠 主應用 | http://localhost:5003 | 魚類檢測主介面 |
+| 📊 日誌查看 | http://localhost:5003/log | 系統運行日誌 |
+| 🔧 管理後台 | http://localhost:5003/admin/logs?admin_key=fish_admin_2024 | 管理員介面 |
+| 🌐 語言切換 | http://localhost:5003/set_language/en | 動態語言切換 |
 
 ## ✅ 測試
 

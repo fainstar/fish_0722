@@ -226,7 +226,7 @@ class FishDetectionSystem:
             print(f"Response data structure: {response_data}")
             return []
 
-    def draw_detections(self, image, predictions, confidence_threshold=0.5, original_size=None, api_url=None):
+    def draw_detections(self, image, predictions, iou_threshold=0.5, original_size=None, api_url=None):
         """在圖片上繪製偵測結果，並根據信賴度使用不同顏色的框。"""
         annotated_image = image.copy()
         current_height, current_width = image.shape[:2]
@@ -265,7 +265,7 @@ class FishDetectionSystem:
         for pred in predictions:
             confidence = pred['confidence']
             # 核心邏輯：只處理高於或等於信賴度閾值的預測
-            if confidence >= confidence_threshold:
+            if confidence >= iou_threshold:
                 
                 # 根據信賴度選擇顏色
                 if confidence >= 0.8:
@@ -413,7 +413,7 @@ class FishDetectionSystem:
         
         return image
 
-    def process_image(self, image_path, confidence_threshold=0.5):
+    def process_image(self, image_path, iou_threshold=0.5):
         """處理單張圖片，包括偵測和繪製"""
         start_time = cv2.getTickCount()
         
@@ -437,11 +437,11 @@ class FishDetectionSystem:
 
         predictions = self.load_predictions_from_response(response_data)
         
-        # 1. 繪製偵測框，此函式內部已根據 confidence_threshold 進行篩選
+        # 1. 繪製偵測框，此函式內部已根據 iou_threshold 進行篩選
         # 返回的 fish_count 和 fish_details 都已是篩選後的結果
         # 傳遞原始尺寸和API URL用於座標縮放判斷
         annotated_image, fish_count, fish_details = self.draw_detections(
-            image, predictions, confidence_threshold, original_size, self.api_url
+            image, predictions, iou_threshold, original_size, self.api_url
         )
         
         # 2. 再加上統計資訊
@@ -473,5 +473,5 @@ class FishDetectionSystem:
             "fish_count": fish_count,
             "fish_details": fish_details,
             "process_time": process_time,
-            "confidence": confidence_threshold
+            "iou": iou_threshold
         }

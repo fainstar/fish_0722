@@ -40,11 +40,11 @@ RUN mkdir -p logs static/uploads static/processed data/output1
 RUN chmod -R 755 /app
 
 # 暴露端口
-EXPOSE 5001
+EXPOSE 5003
 
 # 健康檢查
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5001/ || exit 1
+    CMD curl -f http://localhost:5003/ || exit 1
 
 # 啟動命令
 CMD ["python", "src/app_docker.py"]

@@ -3,6 +3,7 @@
 // 文件上傳預覽功能
 function previewImage(input) {
     if (input.files && input.files[0]) {
+        const file = input.files[0];
         const reader = new FileReader();
         
         reader.onload = function(e) {
@@ -12,11 +13,17 @@ function previewImage(input) {
                 preview.style.display = 'block';
             }
             
+            // 更新文件信息
+            const fileInfo = document.getElementById('fileInfo');
+            if (fileInfo) {
+                fileInfo.textContent = file.name;
+            }
+
             // 清除範例圖片選擇狀態
             resetSampleImageButton();
         }
         
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
     }
 }
 
@@ -235,35 +242,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 使用範例圖片功能
 function useSampleImage() {
-    const fileInput = document.getElementById('file');
+    const sampleImagePath = '/static/demo/A.JPG';
+    const form = document.getElementById('uploadForm');
     const useSampleBtn = document.getElementById('useSampleBtn');
-    
+    const fileInfo = document.getElementById('fileInfo');
+    const imagePreview = document.getElementById('imagePreview');
+
     // 創建一個隱藏的 input 來標記使用範例圖片
     let sampleInput = document.getElementById('use_sample');
     if (!sampleInput) {
         sampleInput = document.createElement('input');
         sampleInput.type = 'hidden';
-        sampleInput.id = 'use_sample';
         sampleInput.name = 'use_sample';
-        document.getElementById('uploadForm').appendChild(sampleInput);
+        sampleInput.id = 'use_sample';
+        form.appendChild(sampleInput);
     }
-    
-    // 設置使用範例圖片
-    sampleInput.value = 'A.JPG';
-    fileInput.removeAttribute('required');
-    
-    // 更新按鈕樣式
-    useSampleBtn.innerHTML = '<i class="fas fa-check"></i> Sample Image Selected';
+    sampleInput.value = 'true';
+
+    // 更新按鈕狀態
+    useSampleBtn.innerHTML = '<i class="fas fa-check-circle"></i><br>' + t('sample_image_selected');
     useSampleBtn.classList.remove('btn-outline-secondary');
-    useSampleBtn.classList.add('btn-success', 'btn-sm');
-    
-    // 清除檔案輸入
+    useSampleBtn.classList.add('btn-success');
+
+    // 清除文件選擇和預覽
+    const fileInput = document.getElementById('file');
     fileInput.value = '';
-    
-    // 新增重置功能
-    useSampleBtn.onclick = function() {
-        resetImageSelection();
-    };
+    if (fileInfo) fileInfo.textContent = '';
+
+    // 顯示範例圖片預覽
+    if (imagePreview) {
+        imagePreview.src = sampleImagePath;
+        imagePreview.style.display = 'block';
+    }
+
+    // 更新文件信息為範例圖片
+    if (fileInfo) {
+        fileInfo.textContent = t('sample_image_chosen');
+    }
 }
 
 // 重置圖片選擇

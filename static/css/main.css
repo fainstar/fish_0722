@@ -10,7 +10,10 @@
 
 /* 自定義檔案上傳和範例圖片按鈕 */
 .btn-lg {
-    min-height: 120px;
+    height: 150px; /* 固定高度 */
+    width: 100%; /* 寬度填滿容器 */
+    max-width: 250px; /* 最大寬度 */
+    margin: 0 auto; /* 水平置中 */
     padding: var(--spacing-md);
     border-radius: var(--border-radius);
     border: 2px dashed var(--border-light);
